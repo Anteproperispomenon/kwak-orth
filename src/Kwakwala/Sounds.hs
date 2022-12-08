@@ -46,7 +46,7 @@ import qualified Data.Text as T
 --   or an ejective consonant.
 --
 --   * __U__ after a consonant indicates that it is
---   the "U"vular version of that consonant, with
+--   the __U__vular version of that consonant, with
 --   the exception of voiceless uvular plosives,
 --   which are represented by __Q__.
 --
@@ -54,17 +54,76 @@ import qualified Data.Text as T
 --   notated, as is the case with most orthographies.
 --
 data KwakLetter
-   = M  | MY | N  | NY
-   | P  | T  | B  | D  | PY  | TY
-   | TS | TL | DZ | DL | TSY | TLY
-   | S  | LH
-   | L  | LY | J  | JY
-   | K  | KW | G  | GW  | KY | KWY
-   | Q  | QW | GU | GUW | QY | QWY
-   | X  | XW | XU | XUW
-   | W  | WY
-   | Y  | H
-   | A | E | I | O | U | AU
+
+   -- Nasal Sounds
+   = M  -- ^ Voiced Bilabial Nasal
+   | MY -- ^ Glottalized Voiced Bilabial Nasal
+   | N  -- ^ Voiced Alveolar Nasal
+   | NY -- ^ Glottalized Voiced Alveolar Nasal
+
+   -- Simple Plosives
+   | P  -- ^ Voiceless Bilabial Plosive
+   | T  -- ^ Voiceless Alveolar Plosive
+   | B  -- ^ Voiced Bilabial Plosive
+   | D  -- ^ Voiced Alveolar Plosive
+   | PY -- ^ Ejective Bilabial Plosive
+   | TY -- ^ Ejective Alveolar Plosive
+
+   -- Affricates
+   | TS  -- ^ Voiceless Alveolar Affricate
+   | TL  -- ^ Voiceless Alveolar Lateral Affricate
+   | DZ  -- ^ Voiced Alveolar Affricate
+   | DL  -- ^ Voiced Alveolar Lateral Affricate
+   | TSY -- ^ Ejective Alveolar Affricate
+   | TLY -- ^ Ejective Alveolar Lateral Affricate
+
+   -- Voiceless Fricatives
+   | S  -- ^ Voiceless Alveolar (Sibilant) Fricative
+   | LH -- ^ Voiceless Alveolar Lateral Fricative
+
+   -- Approximates
+   | L  -- ^ Voiced Alveolar Approximant
+   | LY -- ^ Glottalized Voiced Alveolar Approximant
+   | J  -- ^ Voiced Palatal Approximant
+   | JY -- ^ Glottalized Voiced Palatal Approximant
+
+   -- Velar Plosives
+   | K   -- ^ Voiceless (Palatalized) Velar Plosive
+   | KW  -- ^ Voiceless Labialized Velar Plosive
+   | G   -- ^ Voiced (Palatalized) Velar Plosive
+   | GW  -- ^ Voiced Labialized Velar Plosive
+   | KY  -- ^ Ejective (Palatalized) Velar Plosive
+   | KWY -- ^ Ejective Labialized Velar Plosive
+
+   -- Uvular Plosives
+   | Q   -- ^ Voiceless Uvular Plosive
+   | QW  -- ^ Voiveless Labialized Uvular Plosive
+   | GU  -- ^ Voiced Uvular Plosive
+   | GUW -- ^ Voiced Labialized Uvular Plosive
+   | QY  -- ^ Ejective Uvular Plosive
+   | QWY -- ^ Ejective Labialized Uvular Plosive
+
+   -- Velar/Uvular Fricatives
+   | X   -- ^ Voiceless (Palatalized) Velar Fricative
+   | XW  -- ^ Voiceless Labialized Velar Fricative
+   | XU  -- ^ Voiceless Uvular Fricative
+   | XUW -- ^ Voiceless Labialized Uvular Fricative
+
+   -- Labial Sounds
+   | W  -- ^ Voiced Labial-Velar Approximant
+   | WY -- ^ Glottalized Voiced Labial-Velar Approximant
+
+   -- Glottal Sounds
+   | Y -- ^ Voiceless Glottal Plosive
+   | H -- ^ Voiceless Glottal Fricative
+
+   -- Vowels
+   | A  -- ^ Open Front Unrounded Vowel
+   | E  -- ^ Close-Mid Front Unrounded Vowel
+   | I  -- ^ Close Front Unrounded Vowel
+   | O  -- ^ Close-Mid Back Rounded Vowel
+   | U  -- ^ Close Back Rounded Vowel
+   | AU -- ^ Mid Central Vowel / Schwa
    deriving (Show,Eq,Ord)
 
 -- | A letter/sound together with a capitalisation marker.
