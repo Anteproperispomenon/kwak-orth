@@ -1,0 +1,78 @@
+name:                kwak-orth
+version:             0.1.0.0
+github:              "Anteproperispomenon/kwak-orth"
+license:             BSD3
+author:              "David Wilson"
+maintainer:          "example@example.com"
+copyright:           "2022 David Wilson"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+synopsis:            A library for converting between Kwak'wala orthographies.
+category:            natural-language-processing
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/Anteproperispomenon/kwak-orth#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- attoparsec
+- bytestring
+- directory
+- filepath
+- text
+
+default-extensions:
+- DerivingStrategies
+- ExplicitForAll
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- ImportQualifiedPost
+- KindSignatures
+- MultiParamTypeClasses
+- MultiWayIf
+- OverloadedStrings
+- TupleSections
+- TypeApplications
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  kwak-orth-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - kwak-orth
+    - optparse-applicative
+
+tests:
+  kwak-orth-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - kwak-orth
