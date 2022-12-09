@@ -1,6 +1,6 @@
 {-|
 Module      : Kwakwala.Parsers.Helpers
-Description : Short description
+Description : Parser Helpers
 Copyright   : (c) David Wilson, 2022
 License     : BSD-3
 

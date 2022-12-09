@@ -1,37 +1,35 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Kwakwala.Output.NapaOutputAlt
+Description : Output for the \"standard\" NAPA orthography.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
 
--- The standard NAPA output,
--- as opposed to the version
--- that is actually used.
--- (From https://en.wikipedia.org/wiki/Americanist_phonetic_notation)
+This module contains output functions for
+the standard variant of NAPA. This version
+is not commonly used for Kwak'wala, but might
+be used in some older texts. See
+<https://en.wikipedia.org/wiki/Americanist_phonetic_notation>
+for details.
+
+-}
 
 module Kwakwala.Output.NapaOutputAlt
+    -- * Exclusively Using Strict Text
     ( decodeToNapaAlt
     , decodeToNAPAalt
+    -- * Strict Text with Builders
     , decodeToNapaAlt2
     , decodeToNAPAalt2
-    , KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
+    -- * Lazy Text Output
+    , decodeToNapaAltLazy
+    , decodeToNAPAaltLazy
     ) where
--- asdfzxcv
 
-import qualified Data.Text          as T
-import qualified Data.Text.IO       as T
-import qualified Data.Text.Encoding as T
-
-import qualified Data.Text.Lazy         as TL
-import qualified Data.Text.Lazy.Builder as TL
-
-import Control.Monad
--- import Control.Applicative
--- import Data.Functor
--- import Data.List
-import Data.Char
+import Data.Text              qualified as T
+import Data.Text.Lazy         qualified as TL
+import Data.Text.Lazy.Builder qualified as TL
 
 import Kwakwala.Sounds
-
-import System.IO
 
 -------------------------------------------
 -- Using Standard Strict Text
@@ -85,8 +83,6 @@ outputNAPAalt I   = "i"
 outputNAPAalt O   = "o"
 outputNAPAalt U   = "u"
 outputNAPAalt AU  = "ə"
--- outputNAPAalt Spc  = " "
--- asdfzxcv
 
 outputNAPAalt' :: KwakLetter -> T.Text
 outputNAPAalt' M   = "M"
@@ -137,13 +133,14 @@ outputNAPAalt' I   = "I"
 outputNAPAalt' O   = "O"
 outputNAPAalt' U   = "U"
 outputNAPAalt' AU  = "Ə"
--- outputNAPAalt' Spc  = " "
--- asdfzxcv
 
--- Strict Text-based output
+-- | Output `T.Text` in the \"standard\" variant of NAPA.
+--
+-- This version uses strict `T.Text` output.
 decodeToNapaAlt :: [CasedChar] -> T.Text
 decodeToNapaAlt = T.concat . (map $ mapChar $ mapCase outputNAPAalt' outputNAPAalt)
 
+-- | Synonym for `decodeToNapaAlt`.
 decodeToNAPAalt :: [CasedChar] -> T.Text
 decodeToNAPAalt = decodeToNapaAlt
 
@@ -200,8 +197,6 @@ outputNAPAalt2 I   = "i"
 outputNAPAalt2 O   = "o"
 outputNAPAalt2 U   = "u"
 outputNAPAalt2 AU  = "ə"
--- outputNAPAalt2 Spc  = " "
--- asdfzxcv
 
 -- Builder-based Capital Letter Output
 outputNAPAalt2' :: KwakLetter -> TL.Builder
@@ -254,17 +249,23 @@ outputNAPAalt2' O   = "O"
 outputNAPAalt2' U   = "U"
 outputNAPAalt2' AU  = "Ə"
 
-
+-- | Output `T.Text` in the \"standard\" variant of NAPA.
+--
+-- This version uses strict `T.Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToNapaAlt2 :: [CasedChar] -> T.Text
-decodeToNapaAlt2 = TL.toStrict . decodeToNapaAltLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputNAPAalt2' outputNAPA2))
+decodeToNapaAlt2 = TL.toStrict . decodeToNapaAltLazy
 
+-- | Synonym for `decodeToNapaAlt2`.
 decodeToNAPAalt2 :: [CasedChar] -> T.Text
 decodeToNAPAalt2 = decodeToNapaAlt2
 
+-- | Output `TL.Text` in the \"standard\" variant of NAPA.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToNapaAltLazy :: [CasedChar] -> TL.Text
 decodeToNapaAltLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputNAPAalt2' outputNAPAalt2))
 
+-- | Synonym for `decodeToNapaAltLazy`.
 decodeToNAPAaltLazy :: [CasedChar] -> TL.Text
 decodeToNAPAaltLazy = decodeToNapaAltLazy
-
-
