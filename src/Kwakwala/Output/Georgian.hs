@@ -105,7 +105,7 @@ outputGeorgianX O   = "ო"
 outputGeorgianX U   = "უ"
 outputGeorgianX AU  = "ჷ"
 
--- | Georgian output using (I think) the Asomtavruli script.
+-- | Georgian output using the Asomtavruli script.
 -- Only used if you want "upper-case" Georgian
 -- letters.
 -- Using `IsString` so that you only have
@@ -260,7 +260,7 @@ decodeToGeorgianTitle = T.concat . (map $ mapChar $ mapCase outputGeorgian'' out
 --------------------------------------------
 -- Using Builders
 
--- Builder-based lower-case letter output
+-- Builder-based lower-case/Mkhedruli letter output
 outputGeorgian2 :: KwakLetter -> TL.Builder
 outputGeorgian2 = outputGeorgianX
 
