@@ -81,7 +81,7 @@ data KwakLetter
    | S  -- ^ Voiceless Alveolar (Sibilant) Fricative
    | LH -- ^ Voiceless Alveolar Lateral Fricative
 
-   -- Approximates
+   -- Approximants
    | L  -- ^ Voiced Alveolar Approximant
    | LY -- ^ Glottalized Voiced Alveolar Approximant
    | J  -- ^ Voiced Palatal Approximant

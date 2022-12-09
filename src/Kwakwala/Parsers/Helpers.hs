@@ -7,6 +7,12 @@ License     : BSD-3
 Some helper parsing functions
 that occur frequently in multiple
 parser modules.
+
+Note that not all common parsers
+can be moved here; some rely on
+orthography-specific definitions
+of some characters; e.g. which
+codepoints count as apostrophes.
 -}
 
 module Kwakwala.Parsers.Helpers
