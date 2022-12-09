@@ -1,14 +1,31 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Kwakwala.Output.IPAOutput
+Description : IPA output for Kwak'wala.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This module has output functions for IPA
+from Kwak'wala. IPA is not frequently used
+to write Kwak'wala, so this is mainly used
+to produce IPA pronunciations of Kwak'wala
+text, usually for an academic audience not
+well-versed in Kwak'wala.
+
+Note that IPA has no casing, so upper and
+lower case characters are treated the same.
+-}
 
 module Kwakwala.Output.IPAOutput
+    -- * Exclusively Using Strict Text
     ( decodeToIpa
     , decodeToIpaAlt
+    -- * Strict Text with Builders
+    , decodeToIpa2
     , decodeToIpaAlt2
-    , KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
+    -- * Lazy Text Output
+    , decodeToIpaLazy
+    , decodeToIpaLazyAlt
     ) where
--- asdfzxcv
 
 import qualified Data.Text          as T
 import qualified Data.Text.IO       as T
@@ -18,27 +35,15 @@ import qualified Data.Text.Lazy         as TL
 import qualified Data.Text.Lazy.Builder as TL
 
 import Control.Monad
--- import Control.Applicative
-
--- import Data.Functor
--- import Data.List
 import Data.Char
 import Data.String
 
 import Kwakwala.Sounds
 
--- import Data.Either
-
-import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
-
 -------------------------------------------
--- Using Standard Strict Text
+-- With ties between affricates.
 
 -- Using the IPA to write Kwak'wala
-
--- this is probably the wrong way to do this
 outputIpaX :: (IsString a) => KwakLetter -> a
 outputIpaX M   = "m"
 outputIpaX MY  = "mˀ"
@@ -88,32 +93,10 @@ outputIpaX I   = "i"
 outputIpaX O   = "o"
 outputIpaX U   = "u"
 outputIpaX AU  = "ə"
--- outputIpa Spc  = " "
--- asdfzxcv
 
+-------------------------------------------
+-- Without ties between affricates.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- this is probably the wrong way to do this
--- outputIpaX' :: (IsString a) => KwakLetter -> a
--- outputIpaX' = outputIpaX
 outputIpaX' :: (IsString a) => KwakLetter -> a
 outputIpaX' M   = "m"
 outputIpaX' MY  = "mˀ"
@@ -163,17 +146,6 @@ outputIpaX' I   = "i"
 outputIpaX' O   = "o"
 outputIpaX' U   = "u"
 outputIpaX' AU  = "ə"
--- outputIpa Spc  = " "
--- asdfzxcv
-
-----------------------
--- Possibilities for smallcaps L in uppercase
-
--- Ļ L-cedilla / L-comma
--- Ŀ L-middot
--- Ɫ L-tilde (also ɫ)
--- Ⱡ L-double stroke
-
 
 
 outputIpa :: KwakLetter -> T.Text
@@ -182,16 +154,17 @@ outputIpa = outputIpaX
 outputIpa' :: KwakLetter -> T.Text
 outputIpa' = outputIpaX'
 
-
--- Strict Text-based output
+-- | Standard IPA text, with ties for affricates.
+--
+-- This version uses strict `Text` output.
 decodeToIpa :: [CasedChar] -> T.Text
 decodeToIpa = T.concat . (map $ mapChar $ mapCase outputIpa outputIpa)
 
+-- | IPA text, but without ties for affricates.
+--
+-- This version uses strict `Text` output.
 decodeToIpaAlt :: [CasedChar] -> T.Text
 decodeToIpaAlt = T.concat . (map $ mapChar $ mapCase outputIpa' outputIpa')
-
--- decodeToIpa :: [CasedChar] -> T.Text
--- decodeToIpa = decodeToNapa
 
 --------------------------------------------
 -- Using Builders
@@ -203,23 +176,28 @@ outputIpa2 = outputIpaX
 outputIpa2' :: KwakLetter -> TL.Builder
 outputIpa2' = outputIpaX'
 
+-- | Standard IPA text, with ties for affricates.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToIpa2 :: [CasedChar] -> T.Text
-decodeToIpa2 = TL.toStrict . decodeToIpaLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputIpa2' outputIpa2))
+decodeToIpa2 = TL.toStrict . decodeToIpaLazy
 
+-- | IPA text, but without ties for affricates.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToIpaAlt2 :: [CasedChar] -> T.Text
-decodeToIpaAlt2 = TL.toStrict . decodeToIpaLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputIpa2' outputIpa2))
+decodeToIpaAlt2 = TL.toStrict . decodeToIpaLazyAlt
 
--- decodeToIpa2 :: [CasedChar] -> T.Text
--- decodeToIpa2 = decodeToNapa2
-
+-- | Standard IPA text, with ties for affricates.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToIpaLazy :: [CasedChar] -> TL.Text
 decodeToIpaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputIpa2 outputIpa2))
 
+-- | IPA text, but without ties for affricates.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToIpaLazyAlt :: [CasedChar] -> TL.Text
 decodeToIpaLazyAlt = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputIpa2' outputIpa2'))
-
-
--- decodeToIpaLazy :: [CasedChar] -> TL.Text
--- decodeToIpaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputIpa2' outputIpa2))
-
-

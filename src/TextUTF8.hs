@@ -5,32 +5,37 @@ Copyright   : (c) David Wilson, 2022
 License     : BSD-3
 
 This module has simple alternatives to
-file I/O and stdin/stdout/stderr that
+file I\/O and stdin\/stdout\/stderr that
 ensure that UTF-8 is being used.
 Essentially, it's just a wrapper
 that uses `Data.Text.Encoding`.
-together with I/O from 
+together with I\/O from 
 `Data.ByteString`, so you don't
 have to use the conversion functions
-every time you want to do I/O.
+every time you want to do I\/O.
+
+Since this module has names that clash
+with common functions from `Prelude`,
+you'll want to import this module
+qualified.
 -}
 
 module TextUTF8
-    -- * Direct file I/O
+    -- * Direct file I\/O
     ( readFile
     , writeFile
     , appendFile
     
-    -- * Handle-Based I/O
+    -- * Handle-Based I\/O
     , hGetContents
     , hGetLine
     , hPutStr
     , hPutStrLn
     
-    -- * Functions for stdin/stdout
-    -- ** Working with standard I/O
+    -- * Functions for stdin\/stdout
+    -- ** Working with standard I\/O
     , fixLocale
-    -- ** ByteString-based I/O
+    -- ** ByteString-based I\/O
     , getContents
     , getLine
     , putStr
@@ -50,9 +55,9 @@ import Data.Text (Text)
 import System.IO (Handle, hSetEncoding, stdin, stdout, stderr, utf8)
 
 ----------------------------------------------
--- Working with default I/O.
+-- Working with default I\/O.
 
--- | Ensure that stdin/stdout/stderr use UTF-8 for I/O.
+-- | Ensure that stdin\/stdout\/stderr use UTF-8 for I\/O.
 -- Useful to run at the beginning of main to ensure that
 -- output is consistent.
 fixLocale :: IO ()
