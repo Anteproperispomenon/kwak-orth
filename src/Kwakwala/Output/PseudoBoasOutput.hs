@@ -1,42 +1,37 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Kwakwala.Output.PseudoBoasOutput
+Description : Output for a Boas-like orthography.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This module contains output functions for
+an orthography that tries to replicate
+Boas's orginial orthorgraphy for Kwak'wala.
+Since Boas's orthography is much more
+context-sensitive than most modern
+orthographies, it is more difficult to
+write an output generator that correctly
+replicates the true orthography.
+
+-}
 
 module Kwakwala.Output.PseudoBoasOutput
     ( decodeToPseudoBoas
     , decodeToPseudoBoas2
-    , KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
+    , decodeToPseudoBoasLazy
     ) where
--- asdfzxcv
 
-import qualified Data.Text          as T
-import qualified Data.Text.IO       as T
-import qualified Data.Text.Encoding as T
-
+import qualified Data.Text              as T
 import qualified Data.Text.Lazy         as TL
 import qualified Data.Text.Lazy.Builder as TL
 
-import Control.Monad
--- import Control.Applicative
-
--- import Data.Functor
--- import Data.List
-import Data.Char
 import Data.String
 
 import Kwakwala.Sounds
 
--- import Data.Either
-
-import System.IO
-
 -------------------------------------------
--- Using Standard Strict Text
+-- For Lower Case
 
--- Seems to use same apostrophe
--- (U+0313) as U'mista.
-
--- this is probably the wrong way to do this
 outputPseudoBoasX :: (IsString a) => KwakLetter -> a
 outputPseudoBoasX M   = "m"
 outputPseudoBoasX MY  = "ᵋm"
@@ -86,10 +81,10 @@ outputPseudoBoasX I   = "i" -- i
 outputPseudoBoasX O   = "â" -- a hatchet
 outputPseudoBoasX U   = "u" -- u
 outputPseudoBoasX AU  = "ᴇ"
--- outputPseudoBoas Spc  = " "
--- asdfzxcv
 
--- this is probably the wrong way to do this
+-------------------------------------------
+-- For Upper case
+
 outputPseudoBoasX' :: (IsString a) => KwakLetter -> a
 outputPseudoBoasX' M   = "M"
 outputPseudoBoasX' MY  = "ᵋM"
@@ -139,7 +134,6 @@ outputPseudoBoasX' I   = "I" -- i
 outputPseudoBoasX' O   = "Â" -- a hatchet
 outputPseudoBoasX' U   = "U" -- u
 outputPseudoBoasX' AU  = "Û"
--- asdfzxcv
 
 ----------------------
 -- Possibilities for smallcaps L in uppercase
@@ -155,65 +149,11 @@ outputPseudoBoas = outputPseudoBoasX
 outputPseudoBoas' :: KwakLetter -> T.Text
 outputPseudoBoas' = outputPseudoBoasX'
 
-{-
-outputPseudoBoas' :: KwakLetter -> T.Text
-outputPseudoBoas' M   = "M"
-outputPseudoBoas' MY  = "M\x313"
-outputPseudoBoas' N   = "N"
-outputPseudoBoas' NY  = "N\x313"
-outputPseudoBoas' P   = "P"
-outputPseudoBoas' T   = "T"
-outputPseudoBoas' B   = "B"
-outputPseudoBoas' D   = "D"
-outputPseudoBoas' PY  = "P\x313"
-outputPseudoBoas' TY  = "T\x313"
-outputPseudoBoas' TS  = "C"
-outputPseudoBoas' TL  = "ƛ"
-outputPseudoBoas' DZ  = "Dᶻ"
-outputPseudoBoas' DL  = "Λ"
-outputPseudoBoas' TSY = "C\x313"
-outputPseudoBoas' TLY = "ƛ̓"
-outputPseudoBoas' S   = "S"
-outputPseudoBoas' LH  = "Ł"
-outputPseudoBoas' L   = "L"
-outputPseudoBoas' LY  = "L\x313"
-outputPseudoBoas' J   = "Y"
-outputPseudoBoas' JY  = "Y\x313"
-outputPseudoBoas' K   = "K"
-outputPseudoBoas' KW  = "Kʷ"
-outputPseudoBoas' G   = "G"
-outputPseudoBoas' GW  = "Gʷ"
-outputPseudoBoas' KY  = "K\x313"
-outputPseudoBoas' KWY = "K\x313ʷ"
-outputPseudoBoas' Q   = "Q"
-outputPseudoBoas' QW  = "Qʷ"
-outputPseudoBoas' GU  = "Ǧ"
-outputPseudoBoas' GUW = "Ǧʷ"
-outputPseudoBoas' QY  = "Q\x313"
-outputPseudoBoas' QWY = "Q\x313ʷ"
-outputPseudoBoas' X   = "X"
-outputPseudoBoas' XW  = "Xʷ"
-outputPseudoBoas' XU  = "X\x30c"
-outputPseudoBoas' XUW = "X\x30cʷ"
-outputPseudoBoas' W   = "W"
-outputPseudoBoas' WY  = "W\x313"
-outputPseudoBoas' Y   = "ʔ"
-outputPseudoBoas' H   = "H"
-outputPseudoBoas' A   = "A"
-outputPseudoBoas' E   = "E"
-outputPseudoBoas' I   = "I"
-outputPseudoBoas' O   = "O"
-outputPseudoBoas' U   = "U"
-outputPseudoBoas' AU  = "Ə"
--- asdfzxcv
--}
-
--- Strict Text-based output
+-- | Pseudo-Boas text output.
+--
+-- This version uses strict `Text` output.
 decodeToPseudoBoas :: [CasedChar] -> T.Text
 decodeToPseudoBoas = T.concat . (map $ mapChar $ mapCase outputPseudoBoas' outputPseudoBoas)
-
--- decodeToPseudoBoas :: [CasedChar] -> T.Text
--- decodeToPseudoBoas = decodeToNapa
 
 --------------------------------------------
 -- Using Builders
@@ -225,121 +165,15 @@ outputPseudoBoas2 = outputPseudoBoasX
 outputPseudoBoas2' :: KwakLetter -> TL.Builder
 outputPseudoBoas2' = outputPseudoBoasX'
 
-{-
-outputPseudoBoas2 :: KwakLetter -> TL.Builder
-outputPseudoBoas2 M   = "m"
-outputPseudoBoas2 MY  = "m\x313"
-outputPseudoBoas2 N   = "n"
-outputPseudoBoas2 NY  = "n\x313"
-outputPseudoBoas2 P   = "p"
-outputPseudoBoas2 T   = "t"
-outputPseudoBoas2 B   = "b"
-outputPseudoBoas2 D   = "d"
-outputPseudoBoas2 PY  = "p\x313"
-outputPseudoBoas2 TY  = "t\x313"
-outputPseudoBoas2 TS  = "c"
-outputPseudoBoas2 TL  = "ƛ"
-outputPseudoBoas2 DZ  = "dᶻ"
-outputPseudoBoas2 DL  = "λ"
-outputPseudoBoas2 TSY = "c\x313"
-outputPseudoBoas2 TLY = "ƛ\x313"
-outputPseudoBoas2 S   = "s"
-outputPseudoBoas2 LH  = "ł"
-outputPseudoBoas2 L   = "l"
-outputPseudoBoas2 LY  = "l\x313"
-outputPseudoBoas2 J   = "y"
-outputPseudoBoas2 JY  = "y\x313"
-outputPseudoBoas2 K   = "k"
-outputPseudoBoas2 KW  = "kʷ"
-outputPseudoBoas2 G   = "g"
-outputPseudoBoas2 GW  = "gʷ"
-outputPseudoBoas2 KY  = "k\x313"
-outputPseudoBoas2 KWY = "k\x313ʷ"
-outputPseudoBoas2 Q   = "q"
-outputPseudoBoas2 QW  = "qʷ"
-outputPseudoBoas2 GU  = "ǧ"
-outputPseudoBoas2 GUW = "ǧʷ"
-outputPseudoBoas2 QY  = "q\x313"
-outputPseudoBoas2 QWY = "q\x313ʷ"
-outputPseudoBoas2 X   = "x"
-outputPseudoBoas2 XW  = "xʷ"
-outputPseudoBoas2 XU  = "x\x30c"
-outputPseudoBoas2 XUW = "x\x30cʷ"
-outputPseudoBoas2 W   = "w"
-outputPseudoBoas2 WY  = "w\x313"
-outputPseudoBoas2 Y   = "ʔ"
-outputPseudoBoas2 H   = "h"
-outputPseudoBoas2 A   = "a"
-outputPseudoBoas2 E   = "e"
-outputPseudoBoas2 I   = "i"
-outputPseudoBoas2 O   = "o"
-outputPseudoBoas2 U   = "u"
-outputPseudoBoas2 AU  = "ə"
--- asdfzxcv
-
--- Builder-based Upper-case letters
-outputPseudoBoas2' :: KwakLetter -> TL.Builder
-outputPseudoBoas2' M   = "M"
-outputPseudoBoas2' MY  = "M\x313"
-outputPseudoBoas2' N   = "N"
-outputPseudoBoas2' NY  = "N\x313"
-outputPseudoBoas2' P   = "P"
-outputPseudoBoas2' T   = "T"
-outputPseudoBoas2' B   = "B"
-outputPseudoBoas2' D   = "D"
-outputPseudoBoas2' PY  = "P\x313"
-outputPseudoBoas2' TY  = "T\x313"
-outputPseudoBoas2' TS  = "C"
-outputPseudoBoas2' TL  = "ƛ"
-outputPseudoBoas2' DZ  = "Dᶻ"
-outputPseudoBoas2' DL  = "Λ"
-outputPseudoBoas2' TSY = "C\x313"
-outputPseudoBoas2' TLY = "ƛ̓"
-outputPseudoBoas2' S   = "S"
-outputPseudoBoas2' LH  = "Ł"
-outputPseudoBoas2' L   = "L"
-outputPseudoBoas2' LY  = "L\x313"
-outputPseudoBoas2' J   = "Y"
-outputPseudoBoas2' JY  = "Y\x313"
-outputPseudoBoas2' K   = "K"
-outputPseudoBoas2' KW  = "Kʷ"
-outputPseudoBoas2' G   = "G"
-outputPseudoBoas2' GW  = "Gʷ"
-outputPseudoBoas2' KY  = "K\x313"
-outputPseudoBoas2' KWY = "K\x313ʷ"
-outputPseudoBoas2' Q   = "Q"
-outputPseudoBoas2' QW  = "Qʷ"
-outputPseudoBoas2' GU  = "Ǧ"
-outputPseudoBoas2' GUW = "Ǧʷ"
-outputPseudoBoas2' QY  = "Q\x313"
-outputPseudoBoas2' QWY = "Q\x313ʷ"
-outputPseudoBoas2' X   = "X"
-outputPseudoBoas2' XW  = "Xʷ"
-outputPseudoBoas2' XU  = "X\x30c"
-outputPseudoBoas2' XUW = "X\x30cʷ"
-outputPseudoBoas2' W   = "W"
-outputPseudoBoas2' WY  = "W\x313"
-outputPseudoBoas2' Y   = "ʔ"
-outputPseudoBoas2' H   = "H"
-outputPseudoBoas2' A   = "A"
-outputPseudoBoas2' E   = "E"
-outputPseudoBoas2' I   = "I"
-outputPseudoBoas2' O   = "O"
-outputPseudoBoas2' U   = "U"
-outputPseudoBoas2' AU  = "Ə"
--- asdfzxcv
--}
-
+-- | Pseudo-Boas text output.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToPseudoBoas2 :: [CasedChar] -> T.Text
-decodeToPseudoBoas2 = TL.toStrict . decodeToPseudoBoasLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputPseudoBoas2' outputPseudoBoas2))
+decodeToPseudoBoas2 = TL.toStrict . decodeToPseudoBoasLazy
 
--- decodeToPseudoBoas2 :: [CasedChar] -> T.Text
--- decodeToPseudoBoas2 = decodeToNapa2
-
+-- | Pseudo-Boas text output.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToPseudoBoasLazy :: [CasedChar] -> TL.Text
 decodeToPseudoBoasLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputPseudoBoas2' outputPseudoBoas2))
-
--- decodeToPseudoBoasLazy :: [CasedChar] -> TL.Text
--- decodeToPseudoBoasLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputPseudoBoas2' outputPseudoBoas2))
-
-
