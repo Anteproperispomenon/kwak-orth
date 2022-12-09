@@ -1,29 +1,61 @@
+{-|
+Module      : Kwakwala.Output.GrubbAscii
+Description : Output for an ASCII-compatible orthography.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This module has output functions for an
+orthography for Kwak'wala based on the
+Grubb orthography, but modified to be
+usable for ASCII. 
+
+Note that since the main version of
+Grubb-ASCII uses digraphs that end
+in \"h\", you cannot have e.g. \"g\"
+followed by \"h\", since that would be
+interpreted as a uvular \"g\", rather
+than velar \"g\" followed by a glottal
+fricative.
+
+As a result, there is an alternate version
+of Grubb-ASCII where the sound \/h\/ is
+represented by \"J\/j\" instead. Functions
+that have a \"J\" near the end use this 
+version instead.
+
+Also, in standard Grubb-ASCII, glottal
+stops followed by vowels at the beginning
+of a word are omitted. If you want to
+__keep__ the glottal stops at the beginnings
+of words, use the functions that have an \"X\"
+near the end.
+-}
+
 module Kwakwala.Output.GrubbAscii
+    -- * Exclusively Using Strict Text
     ( decodeToGrubbAscii
+    , decodeToGrubbAsciiX
+    , decodeToGrubbAsciiJ
+    , decodeToGrubbAsciiJX
+    -- * Strict Text with Builders
     , decodeToGrubbAscii2
+    , decodeToGrubbAsciiX2
+    , decodeToGrubbAsciiJ2
+    , decodeToGrubbAsciiJX2
+    -- * Lazy Text Output
+    , decodeToGrubbAsciiLazy
+    , decodeToGrubbAsciiLazyX
+    , decodeToGrubbAsciiLazyJ
+    , decodeToGrubbAsciiLazyJX
     ) where
 
-import Data.Text          qualified as T
-import Data.Text.IO       qualified as T
-import Data.Text.Encoding qualified as T
-
+import Data.Text              qualified as T
 import Data.Text.Lazy         qualified as TL
 import Data.Text.Lazy.Builder qualified as TL
 
-import Control.Monad
-
-import Data.List
--- import Control.Applicative
-
--- import Data.Functor
--- import Data.List
-import Data.Char
+import Data.List (groupBy)
 
 import Kwakwala.Sounds
-
--- import Data.Either
-
-import System.IO
 
 -------------------------------------------
 -- Using Standard Strict Text
@@ -78,7 +110,10 @@ outputGrubbAscii I   = "i"
 outputGrubbAscii O   = "o"
 outputGrubbAscii U   = "u"
 outputGrubbAscii AU  = "e"
--- outputGrubbAscii Spc  = " "
+
+outputGrubbAsciiJ :: KwakLetter -> T.Text
+outputGrubbAsciiJ H = "j"
+outputGrubbAsciiJ x = outputGrubbAscii x
 
 -- | Output an upper-case Grubb-ASCII character.
 outputGrubbAscii' :: KwakLetter -> T.Text
@@ -131,18 +166,59 @@ outputGrubbAscii' O   = "O"
 outputGrubbAscii' U   = "U"
 outputGrubbAscii' AU  = "E"
 
+outputGrubbAsciiJ' :: KwakLetter -> T.Text
+outputGrubbAsciiJ' H = "J"
+outputGrubbAsciiJ' x = outputGrubbAscii' x
+
 -- Strict Text-based output
 decodeToGrubbAsciiOld :: [CasedChar] -> T.Text
 decodeToGrubbAsciiOld = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' outputGrubbAscii)
 
 -- Again from U'mista
 
--- Taking the initial glottal stop into account
+-- | This is the standard version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses strict `Text` output.
 decodeToGrubbAscii :: [CasedChar] -> T.Text
-decodeToGrubbAscii xs = decodeToGrubbMain $ decodeToGrubbAscii' [] $ groupBy isSameCaseType xs
+decodeToGrubbAscii xs = decodeToGrubbMain $ setupGlottal xs
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses strict `Text` output.
+decodeToGrubbAsciiX :: [CasedChar] -> T.Text
+decodeToGrubbAsciiX xs = decodeToGrubbMain xs
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses strict `Text` output.
+decodeToGrubbAsciiJ :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJ xs = decodeToGrubbMainJ $ setupGlottal xs
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses strict `Text` output.
+decodeToGrubbAsciiJX :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJX xs = decodeToGrubbMain xs
+
 
 decodeToGrubbMain :: [CasedChar] -> T.Text
 decodeToGrubbMain = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' outputGrubbAscii)
+
+decodeToGrubbMainJ :: [CasedChar] -> T.Text
+decodeToGrubbMainJ = T.concat . (map $ mapChar $ mapCase outputGrubbAsciiJ' outputGrubbAsciiJ)
+
 
 -- left-fold
 decodeToGrubbAscii' :: [[CasedChar]] -> [[CasedChar]] -> [CasedChar]
@@ -151,6 +227,10 @@ decodeToGrubbAscii' acc ((x@(Kwak z1) : y@(Kwak z2) : xs) : xss)
     | (isCharLetter Y x) && (isKwkVow' z2) = ((decodeToGrubbAscii' ((  y:xs):acc) xss))
     | otherwise                            = ((decodeToGrubbAscii' ((x:y:xs):acc) xss))
 decodeToGrubbAscii' acc (xs : xss) = (decodeToGrubbAscii' (xs:acc) xss)
+
+-- Set up glottal stops.
+setupGlottal :: [CasedChar] -> [CasedChar]
+setupGlottal xs = decodeToGrubbAscii' [] $ groupBy isSameCaseType xs
 
 --------------------------------------------
 -- Using Builders
@@ -205,7 +285,10 @@ outputGrubbAscii2 I   = "i"
 outputGrubbAscii2 O   = "o"
 outputGrubbAscii2 U   = "u"
 outputGrubbAscii2 AU  = "e"
--- outputGrubbAscii Spc  = " "
+
+outputGrubbAsciiJ2 :: KwakLetter -> TL.Builder
+outputGrubbAsciiJ2 H = "j"
+outputGrubbAsciiJ2 x = outputGrubbAscii2 x
 
 outputGrubbAscii2' :: KwakLetter -> TL.Builder
 outputGrubbAscii2' M   = "M"
@@ -257,14 +340,83 @@ outputGrubbAscii2' O   = "O"
 outputGrubbAscii2' U   = "U"
 outputGrubbAscii2' AU  = "E"
 
+outputGrubbAsciiJ2' :: KwakLetter -> TL.Builder
+outputGrubbAsciiJ2' H = "J"
+outputGrubbAsciiJ2' x = outputGrubbAscii2' x
+
+-- | This is the standard version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAscii2 :: [CasedChar] -> T.Text
-decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputNAPA2' outputNAPA2))
+decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy
 
--- decodeToNAPA2 :: [CasedChar] -> T.Text
--- decodeToNAPA2 = decodeToGrubbAscii2
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToGrubbAsciiX2 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiX2 = TL.toStrict . decodeToGrubbAsciiLazyX
 
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToGrubbAsciiJ2 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJ2 = TL.toStrict . decodeToGrubbAsciiLazyJ
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToGrubbAsciiJX2 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJX2 = TL.toStrict . decodeToGrubbAsciiLazyJX
+
+-- | This is the standard version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToGrubbAsciiLazy :: [CasedChar] -> TL.Text
-decodeToGrubbAsciiLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2))
+decodeToGrubbAsciiLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2)) . setupGlottal
 
--- decodeToNAPALazy :: [CasedChar] -> TL.Text
--- decodeToNAPALazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputNAPA2' outputNAPA2))
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"H\/h\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToGrubbAsciiLazyX :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyX = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2))
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are ommited.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToGrubbAsciiLazyJ :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyJ = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2)) . setupGlottal
+
+-- | This is an alternate version of Grubb-ASCII,
+-- where \/h\/ is represented as \"J\/j\", and
+-- glottal stops at the beginnings of words
+-- are __not__ omitted.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToGrubbAsciiLazyJX :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyJX = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2))
+

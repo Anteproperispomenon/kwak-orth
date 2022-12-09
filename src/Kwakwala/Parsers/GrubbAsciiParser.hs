@@ -302,7 +302,7 @@ parseN' b (Just x)
 -- Entry Point
 parseJ :: AT.Parser CasedLetter
 parseJ = do
-    { b <- isUpper <$> AT.satisfy (\x -> x == 'y' || x == 'Y' || x == 'j' || x == 'J')
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'y' || x == 'Y')
     ; AT.peekChar >>= parseJ' b
     }
 
@@ -369,7 +369,7 @@ parseS = do
 
 parseH :: AT.Parser CasedLetter
 parseH = do
-    { b <- isUpper <$> AT.satisfy (\x -> x == 'h' || x == 'H')
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'h' || x == 'H' || x == 'j' || x == 'J')
     ; return $ makeCase b H
     }
 
