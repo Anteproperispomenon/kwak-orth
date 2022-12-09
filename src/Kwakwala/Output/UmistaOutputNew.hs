@@ -30,8 +30,6 @@ import Data.Char
 
 import Kwakwala.Sounds
 
--- import Data.Either
-
 import System.IO
 
 fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8

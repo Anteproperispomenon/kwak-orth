@@ -194,7 +194,7 @@ isKwkVow' :: CasedLetter -> Bool
 isKwkVow' (Maj x) = isKwkVow x
 isKwkVow' (Min x) = isKwkVow x
 
--- | Check wheter a `CasedChar` is a vowel.
+-- | Check whether a `CasedChar` is a vowel.
 isKwkVow'' :: CasedChar -> Bool
 isKwkVow'' (Kwak x) = isKwkVow' x
 isKwkVow'' _        = False

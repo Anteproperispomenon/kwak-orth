@@ -16,12 +16,15 @@ module Kwakwala.Output.Georgian
     -- * Exclusively Using Strict Text
     ( decodeToGeorgian
     , decodeToGeorgianAlt
+    , decodeToGeorgianTitle
     -- * Strict Text with Builders
     , decodeToGeorgian2
     , decodeToGeorgianAlt2
+    , decodeToGeorgianTitle2
     -- * Lazy Text Output
     , decodeToGeorgianLazy
     , decodeToGeorgianLazyAlt
+    , decodeToGeorgianLazyTitle
     ) where
 
 import Data.Text              qualified as T
@@ -31,18 +34,10 @@ import Data.Text.Lazy         qualified as TL
 import Data.Text.Lazy.Builder qualified as TL
 
 import Control.Monad
--- import Control.Applicative
-
--- import Data.Functor
--- import Data.List
 import Data.Char
 import Data.String
 
 import Kwakwala.Sounds
-
--- import Data.Either
-
-import System.IO
 
 -------------------------------------------
 -- Using Standard Strict Text
@@ -109,8 +104,6 @@ outputGeorgianX I   = "ი"
 outputGeorgianX O   = "ო"
 outputGeorgianX U   = "უ"
 outputGeorgianX AU  = "ჷ"
--- outputGeorgian Spc  = " "
--- asdfzxcv
 
 -- | Georgian output using (I think) the Asomtavruli script.
 -- Only used if you want "upper-case" Georgian
@@ -132,7 +125,7 @@ outputGeorgianX' TY  = "Ⴒ"
 outputGeorgianX' TS  = "Ⴚ"
 outputGeorgianX' TL  = "Ⴙ"
 outputGeorgianX' DZ  = "Ⴛ"
-outputGeorgianX' DL  = "Ⴟ" -- \x323 = combining dot below -- Ⱡ
+outputGeorgianX' DL  = "Ⴟ"
 outputGeorgianX' TSY = "Ⴜ"
 outputGeorgianX' TLY = "Ⴝ"
 outputGeorgianX' S   = "Ⴑ"
@@ -149,8 +142,8 @@ outputGeorgianX' KY  = "Ⴉ"
 outputGeorgianX' KWY = "Ⴉვ"
 outputGeorgianX' Q   = "Ⴤ"
 outputGeorgianX' QW  = "Ⴤვ"
-outputGeorgianX' GU  = "Ⴖ" -- "g̣"
-outputGeorgianX' GUW = "Ⴖვ" -- "g̣ᵘ"
+outputGeorgianX' GU  = "Ⴖ"
+outputGeorgianX' GUW = "Ⴖვ"
 outputGeorgianX' QY  = "Ⴗ"
 outputGeorgianX' QWY = "Ⴗვ"
 outputGeorgianX' X   = "Ⴐ"
@@ -161,13 +154,69 @@ outputGeorgianX' W   = "Ⴅ"
 outputGeorgianX' WY  = "ჸႥ"
 outputGeorgianX' Y   = "ჸ"
 outputGeorgianX' H   = "Ⴠ"
-outputGeorgianX' A   = "Ⴀ" -- a
-outputGeorgianX' E   = "Ⴄ" -- a umlaut
-outputGeorgianX' I   = "Ⴈ" -- i
-outputGeorgianX' O   = "Ⴍ" -- a hatchet
-outputGeorgianX' U   = "Ⴓ" -- u
-outputGeorgianX' AU  = "ჷ"
--- asdfzxcv
+outputGeorgianX' A   = "Ⴀ"
+outputGeorgianX' E   = "Ⴄ"
+outputGeorgianX' I   = "Ⴈ"
+outputGeorgianX' O   = "Ⴍ"
+outputGeorgianX' U   = "Ⴓ"
+outputGeorgianX' AU  = "Ⴧ"
+
+-- | Georgian output using the Mtavruli script.
+-- This is an alternate version of Mkhedruli
+-- that is used for all-caps text in Georgian.
+--
+-- Using `IsString` so that you only have
+-- to write one function for multiple output
+-- types.
+outputGeorgianX'' :: (IsString a) => KwakLetter -> a
+outputGeorgianX'' M   = "Მ"
+outputGeorgianX'' MY  = "Ჸმ"
+outputGeorgianX'' N   = "Ნ"
+outputGeorgianX'' NY  = "Ჸნ"
+outputGeorgianX'' P   = "Ფ"
+outputGeorgianX'' T   = "Თ"
+outputGeorgianX'' B   = "Ბ"
+outputGeorgianX'' D   = "Დ"
+outputGeorgianX'' PY  = "Პ"
+outputGeorgianX'' TY  = "Ტ"
+outputGeorgianX'' TS  = "Ც"
+outputGeorgianX'' TL  = "Ჩ"
+outputGeorgianX'' DZ  = "Ძ"
+outputGeorgianX'' DL  = "Ჯ"
+outputGeorgianX'' TSY = "Წ"
+outputGeorgianX'' TLY = "Ჭ"
+outputGeorgianX'' S   = "Ს"
+outputGeorgianX'' LH  = "Შ"
+outputGeorgianX'' L   = "Ლ"
+outputGeorgianX'' LY  = "Ჸლ"
+outputGeorgianX'' J   = "Ჲ"
+outputGeorgianX'' JY  = "Ჸჲ"
+outputGeorgianX'' K   = "Ქ"
+outputGeorgianX'' KW  = "Ქვ"
+outputGeorgianX'' G   = "Გ"
+outputGeorgianX'' GW  = "Გვ"
+outputGeorgianX'' KY  = "Კ"
+outputGeorgianX'' KWY = "Კვ"
+outputGeorgianX'' Q   = "Ჴ"
+outputGeorgianX'' QW  = "Ჴვ"
+outputGeorgianX'' GU  = "Ღ"
+outputGeorgianX'' GUW = "Ღვ"
+outputGeorgianX'' QY  = "Ყ"
+outputGeorgianX'' QWY = "Ყვ"
+outputGeorgianX'' X   = "Რ"
+outputGeorgianX'' XW  = "Რვ"
+outputGeorgianX'' XU  = "Ხ"
+outputGeorgianX'' XUW = "Ხვ"
+outputGeorgianX'' W   = "Ვ"
+outputGeorgianX'' WY  = "Ჸვ"
+outputGeorgianX'' Y   = "Ჸ"
+outputGeorgianX'' H   = "Ჰ"
+outputGeorgianX'' A   = "Ა"
+outputGeorgianX'' E   = "Ე"
+outputGeorgianX'' I   = "Ი"
+outputGeorgianX'' O   = "Ო"
+outputGeorgianX'' U   = "Უ"
+outputGeorgianX'' AU  = "Ჷ"
 
 ----------------------
 -- Possibilities for smallcaps L in uppercase
@@ -183,6 +232,8 @@ outputGeorgian = outputGeorgianX
 outputGeorgian' :: KwakLetter -> T.Text
 outputGeorgian' = outputGeorgianX'
 
+outputGeorgian'' :: KwakLetter -> T.Text
+outputGeorgian'' = outputGeorgianX''
 
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
@@ -197,6 +248,15 @@ decodeToGeorgian = T.concat . (map $ mapChar $ mapCase outputGeorgian' outputGeo
 decodeToGeorgianAlt :: [CasedChar] -> T.Text
 decodeToGeorgianAlt = T.concat . (map $ mapChar $ mapCase outputGeorgian outputGeorgian)
 
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts.
+-- Use this for an alternate version of title-case text,
+-- where upper-case letters are much closer in appearance
+-- to their lower-case counterpart.
+-- 
+-- This version uses strict `Text` output.
+decodeToGeorgianTitle :: [CasedChar] -> T.Text
+decodeToGeorgianTitle = T.concat . (map $ mapChar $ mapCase outputGeorgian'' outputGeorgian)
+
 --------------------------------------------
 -- Using Builders
 
@@ -204,8 +264,13 @@ decodeToGeorgianAlt = T.concat . (map $ mapChar $ mapCase outputGeorgian outputG
 outputGeorgian2 :: KwakLetter -> TL.Builder
 outputGeorgian2 = outputGeorgianX
 
+-- Builder-based Asomtavruli letter output
 outputGeorgian2' :: KwakLetter -> TL.Builder
 outputGeorgian2' = outputGeorgianX'
+
+-- Builder-based Mtavruli letter output
+outputGeorgian2'' :: KwakLetter -> TL.Builder
+outputGeorgian2'' = outputGeorgianX''
 
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
@@ -222,6 +287,17 @@ decodeToGeorgian2 = TL.toStrict . decodeToGeorgianLazy
 decodeToGeorgianAlt2 :: [CasedChar] -> T.Text
 decodeToGeorgianAlt2 = TL.toStrict . decodeToGeorgianLazyAlt
 
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts.
+-- Use this for an alternate version of title-case text,
+-- where upper-case letters are much closer in appearance
+-- to their lower-case counterpart.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToGeorgianTitle2 :: [CasedChar] -> T.Text
+decodeToGeorgianTitle2 = TL.toStrict . decodeToGeorgianLazyTitle
+
+
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
 -- 
@@ -234,4 +310,13 @@ decodeToGeorgianLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ 
 -- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToGeorgianLazyAlt :: [CasedChar] -> TL.Text
 decodeToGeorgianLazyAlt = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGeorgian2 outputGeorgian2))
+
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts.
+-- Use this for an alternate version of title-case text,
+-- where upper-case letters are much closer in appearance
+-- to their lower-case counterpart.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToGeorgianLazyTitle :: [CasedChar] -> TL.Text
+decodeToGeorgianLazyTitle = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGeorgian2'' outputGeorgian2))
 

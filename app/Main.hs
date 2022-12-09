@@ -42,7 +42,7 @@ import qualified Options.Applicative.Help.Pretty as D
 
 import qualified TextUTF8 as TU
 
-import Kwakwala.Parsers.UmistaParserOnly
+import Kwakwala.Parsers.Umista
 import Kwakwala.Output.UmistaOutputNew
 import Kwakwala.Parsers.NapaParser
 import Kwakwala.Output.NapaOutput
@@ -57,7 +57,7 @@ import Kwakwala.Parsers.GrubbAsciiParser
 
 import Kwakwala.Output.IPAOutput
 
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
+-- fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 data OrthType = Umista | Napa | Umista2 | Boas | PseudoBoas | Georgian | Georgian2 | GrubbAscii | IPA | IPA2 deriving (Show, Eq)
 
@@ -240,7 +240,7 @@ opts = info (mainParser <**> helper)
 
 main :: IO ()
 main = do
-    { fixLocale
+    { TU.fixLocale
     ; options@(FullInput inf outf inp outp w sty ver) <- execParser opts
     ; mapM showVersionInfo (if ver then (versionInfo) else (take versionDisplay versionInfo))
     ; when (inputType  options == PseudoBoas) $ putStrLn "Note: Pseudo-Boas input is the same as Boas input."

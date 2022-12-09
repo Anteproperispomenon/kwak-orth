@@ -1,5 +1,5 @@
 {-|
-Module      : Kwakwala.Parsers.UmistaParserOnly
+Module      : Kwakwala.Parsers.Umista
 Description : Parser for the U'mista Orthography for Kwak'wala.
 Copyright   : (c) David Wilson, 2022
 License     : BSD-3
@@ -10,7 +10,7 @@ for each function. Try using the "-old" functions
 if you're having issues with parsing text.
 -}
 
-module Kwakwala.Parsers.UmistaParserOnly
+module Kwakwala.Parsers.Umista
     -- * Parsers
     ( parseUmista
     , parseUmistaOld

@@ -39,7 +39,7 @@ library
       Kwakwala.Parsers.GrubbAsciiParser
       Kwakwala.Parsers.Helpers
       Kwakwala.Parsers.NapaParser
-      Kwakwala.Parsers.UmistaParserOnly
+      Kwakwala.Parsers.Umista
       Kwakwala.Sounds
       TextUTF8
   other-modules:
