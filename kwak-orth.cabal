@@ -39,7 +39,6 @@ library
       Kwakwala.Parsers.GrubbAsciiParser
       Kwakwala.Parsers.Helpers
       Kwakwala.Parsers.NapaParser
-      Kwakwala.Parsers.UmistaParserNew
       Kwakwala.Parsers.UmistaParserOnly
       Kwakwala.Sounds
       TextUTF8
@@ -103,6 +102,7 @@ test-suite kwak-orth-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Test.Examples.Umista
       Paths_kwak_orth
   hs-source-dirs:
       test

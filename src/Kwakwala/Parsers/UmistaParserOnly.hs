@@ -101,7 +101,7 @@ parseK' b (Just x)
 
 parseKUN :: AT.Parser CasedLetter
 parseKUN = do
-    { b <- isUpper <$> AT.satisfy (\x -> x == 'ḵ' || x == 'Ḵ' || x == 'q' || x == "Q")
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'ḵ' || x == 'Ḵ' || x == 'q' || x == 'Q')
     ; AT.peekChar >>= parseQ b
     }
 
@@ -478,9 +478,5 @@ parseUmistaOld = AT.many1 parseUmistaChar
 encodeFromUmistaOld :: T.Text -> [CasedChar]
 encodeFromUmistaOld txt = fromRight [] $ AT.parseOnly parseUmistaOld txt
 -- Əə
-
-sentence1 = "ga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
-
-sentence2 = "aga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
 
 
