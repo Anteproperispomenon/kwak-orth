@@ -25,18 +25,13 @@ import qualified Data.Text.Lazy.Builder as TL
 
 import Control.Monad
 -- import Control.Applicative
-
 -- import Data.Functor
 -- import Data.List
 import Data.Char
 
 import Kwakwala.Sounds
 
--- import Data.Either
-
 import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 -------------------------------------------
 -- Using Standard Strict Text

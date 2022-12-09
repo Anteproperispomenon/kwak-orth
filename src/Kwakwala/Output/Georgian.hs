@@ -12,7 +12,6 @@ letters, it is fairly easy to adapt the
 alphabet to Kwak'wala.
 -}
 
-
 module Kwakwala.Output.Georgian
     -- * Exclusively Using Strict Text
     ( decodeToGeorgian

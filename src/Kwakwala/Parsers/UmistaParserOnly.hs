@@ -1,14 +1,23 @@
+{-|
+Module      : Kwakwala.Parsers.UmistaParserOnly
+Description : Parser for the U'mista Orthography for Kwak'wala.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This is the module for parsing the U'mista
+orthography. Note that there are two versions
+for each function. Try using the "-old" functions
+if you're having issues with parsing text.
+-}
+
 module Kwakwala.Parsers.UmistaParserOnly
-    ( KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
-    , CasedWord(..)
-    , encodeFromUmista
-    , parseUmista
+    -- * Parsers
+    ( parseUmista
     , parseUmistaOld
+    -- * Direct Encoders
+    , encodeFromUmista
     , encodeFromUmistaOld
     ) where
--- asdfzxcv
 
 import Data.Attoparsec.Text qualified as AT
 
@@ -29,8 +38,6 @@ import Kwakwala.Parsers.Helpers
 import Data.Either
 
 import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 -----------------------------------------
 -- a̱
@@ -94,7 +101,7 @@ parseK' b (Just x)
 
 parseKUN :: AT.Parser CasedLetter
 parseKUN = do
-    { b <- isUpper <$> AT.satisfy (\x -> x == 'ḵ' || x == 'Ḵ')
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'ḵ' || x == 'Ḵ' || x == 'q' || x == "Q")
     ; AT.peekChar >>= parseQ b
     }
 
@@ -132,8 +139,6 @@ parseQY b (Just x)
 
 ------------------------------------------------------------------------
 
--- Ǥǥ
-
 parseG :: AT.Parser CasedLetter
 parseG = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'g' || x == 'G')
@@ -147,6 +152,7 @@ parseG' b (Just x)
     | isW         x = AT.anyChar >> (return $ makeCase b GW)
     | otherwise     = return $ makeCase b G
 
+-- Ǥǥ
 parseGUN :: AT.Parser CasedLetter
 parseGUN = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'ǥ' || x == 'Ǥ')
@@ -238,7 +244,6 @@ parseN = do
 
 -- ŁłƚǱǲǳɫɬ
 
-
 -- might want to look at '\313' (NOT \x313), which is an
 -- upper-case L with an acute accent.
 parseL :: AT.Parser CasedLetter
@@ -313,15 +318,6 @@ parseX' b (Just x)
     | isW         x = AT.anyChar >> AT.peekChar >>= parseXW b
     | otherwise     = return $ makeCase b X
 
-{-
-parseKUN :: AT.Parser CasedLetter
-parseKUN = do
-    { AT.satisfy (\x -> x == 'ḵ' || x == 'Ḵ')
-    ; AT.peekChar >>= parseQ
-    }
--- asdfxzcv
--}
-
 parseXW :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseXW b Nothing = return $ makeCase b XW
 parseXW b (Just x)
@@ -334,7 +330,6 @@ parseXU b Nothing = return $ makeCase b XU
 parseXU b (Just x)
     | isW     x = AT.anyChar >> (return $ makeCase b XUW)
     | otherwise = return $ makeCase b XU
--- asdfzxcv
 
 --------------------------------------------------------
 
@@ -399,9 +394,6 @@ parseU = (AT.char 'u' $> Min U) <|> (AT.char 'U' $> Maj U)
 ------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------
 
--- parseSpace :: AT.Parser CasedLetter
--- parseSpace = AT.char ' ' $> Spc
-
 -- Handles start of words,
 -- where glottal stops aren't notated
 parseUmistaWord :: AT.Parser [CasedLetter]
@@ -440,7 +432,6 @@ parseUmistaLetter = AT.choice [parseA,parseE,parseI,parseO,parseU
 parsePuncts :: AT.Parser CasedChar
 parsePuncts = Punct <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x || (x == '|')))
 
-
 parsePunctsA :: AT.Parser CasedWord
 parsePunctsA = PunctW <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x))
 
@@ -456,33 +447,40 @@ parseUmistaMain = (map Kwak <$> parseUmistaWord) <|> ((:[]) <$> parsePipe) <|> (
 parseUmistaWords :: AT.Parser [CasedWord]
 parseUmistaWords = AT.many1 (parseUmistaWordA <|> parsePunctsA <|> (PunctW <$> T.singleton <$> AT.anyChar))
 
+-- | The main parser for U'mista. Non-U'mista characters
+-- are parsed with `AT.takeWhile1`, so this version is
+-- more efficient.
 parseUmista :: AT.Parser [CasedChar]
 parseUmista = concat <$> AT.many1 parseUmistaMain
 -- parseUmista = AT.many1 parseUmistaCharNew
 
+-- | Directly convert some U'mista text to a
+-- list of `CasedChar`. Note that if the
+-- parser fails, this just returns an empty
+-- list. If you want actual error handling,
+-- use `parseUmista` together with `AT.parseOnly`.
 encodeFromUmista :: T.Text -> [CasedChar]
 encodeFromUmista txt = fromRight [] $ AT.parseOnly parseUmista txt
 
+-- | An alternate parser for U'mista. Non-U'mista
+-- characters are parsed one at a time. Use this
+-- if `parseUmista` is having issues.
 parseUmistaOld :: AT.Parser [CasedChar]
 parseUmistaOld = AT.many1 parseUmistaChar
 
+-- | Directly convert some U'mista text to a
+-- list of `CasedChar`. Like `parseUmistaOld`,
+-- this parses non-U'mista characters one
+-- at a time. Note that if the parser fails,
+-- this just returns an empty list. If you
+-- want actual error handling, use `parseUmista`
+-- together with `AT.parseOnly`.
 encodeFromUmistaOld :: T.Text -> [CasedChar]
 encodeFromUmistaOld txt = fromRight [] $ AT.parseOnly parseUmistaOld txt
-
-
 -- Əə
-
--- convertNAPA = T.concat . (map $ mapChar $ mapCase outputNAPA' outputNAPA)
-
--- doNAPA x = T.putStrLn $ convertNAPA $ fromRight [] $ AT.parseOnly parseUmista x
-
 
 sentence1 = "ga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
 
 sentence2 = "aga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
-
-
--- return \$ makeCase b ([A-Z]*)
--- \(return \$ makeCase b $1\)
 
 
