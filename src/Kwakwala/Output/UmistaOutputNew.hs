@@ -1,38 +1,39 @@
--- This uses the U'mista orthography
--- as seen at http://www.languagegeek.com/wakashan/kwakwala.html
+{-|
+Module      : Kwakwala.Output.UmistaOutputNew
+Description : U'mista output for Kwak'wala.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This module contains output functions for
+the U'mista orthography for Kwak'wala. 
+U'mista is the most commonly used orthography
+for northern dialects of Kwak'wala. This is
+one of the most commonly used output modules
+in this library.
+
+For more information about the U'mista orthography,
+see <http://www.languagegeek.com/wakashan/kwakwala.html>.
+
+-}
 
 module Kwakwala.Output.UmistaOutputNew
+    -- * Exclusively Using Strict Text
     ( decodeToUmista
-    , decodeToUmista2
     , decodeToUmistaAlt
+    -- * Strict Text with Builders
+    , decodeToUmista2
     , decodeToUmistaAlt2
-    , KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
+    -- * Lazy Text Output
+    , decodeToUmistaLazy
+    , decodeToUmistaAltLazy
     ) where
--- asdfzxcv
 
-import qualified Data.Text          as T
-import qualified Data.Text.IO       as T
-import qualified Data.Text.Encoding as T
-
-import qualified Data.Text.Lazy         as TL
-import qualified Data.Text.Lazy.Builder as TL
+import Data.Text              qualified as T
+import Data.Text.Lazy         qualified as TL
+import Data.Text.Lazy.Builder qualified as TL
 
 import Data.List (groupBy)
-
-import Control.Monad
--- import Control.Applicative
-
--- import Data.Functor
--- import Data.List
-import Data.Char
-
 import Kwakwala.Sounds
-
-import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 -------------------------------------------
 -- Using Standard Strict Text
@@ -104,7 +105,6 @@ outputUmista I   = "i"
 outputUmista O   = "o"
 outputUmista U   = "u"
 outputUmista AU  = "a̱"
--- asdfzxcv
 
 -- Title Case
 outputUmista' :: KwakLetter -> T.Text
@@ -156,7 +156,6 @@ outputUmista' I   = "I"
 outputUmista' O   = "O"
 outputUmista' U   = "U"
 outputUmista' AU  = "A\x331"
--- asdfzxcv
 
 -- Upper Case
 outputUmista'' :: KwakLetter -> T.Text
@@ -208,8 +207,10 @@ outputUmista'' I   = "I"
 outputUmista'' O   = "O"
 outputUmista'' U   = "U"
 outputUmista'' AU  = "A\x331"
--- asdfzxcv
 
+-- Alternate version where the apostrophe
+-- comes after the consonant for 
+-- glottalised sonorants.
 outputUmistaAlt :: KwakLetter -> T.Text 
 outputUmistaAlt MY = "m\x313"
 outputUmistaAlt NY = "n\x313"
@@ -218,6 +219,9 @@ outputUmistaAlt JY = "y\x313"
 outputUmistaAlt WY = "w\x313"
 outputUmistaAlt x  = outputUmista x
 
+-- Alternate version where the apostrophe
+-- comes after the consonant for 
+-- glottalised sonorants.
 outputUmistaAlt' :: KwakLetter -> T.Text 
 outputUmistaAlt' MY = "M\x313"
 outputUmistaAlt' NY = "N\x313"
@@ -226,6 +230,9 @@ outputUmistaAlt' JY = "Y\x313"
 outputUmistaAlt' WY = "W\x313"
 outputUmistaAlt' x  = outputUmista' x
 
+-- | Standard U'mista text output.
+--
+-- This version uses strict `Text` output.
 decodeToUmista :: [CasedChar] -> T.Text
 decodeToUmista = decodeToUmistaY
 
@@ -234,13 +241,21 @@ decodeToUmistaMain :: [CasedChar] -> T.Text
 decodeToUmistaMain = T.concat . (map $ mapChar $ mapCase outputUmista' outputUmista)
 
 -- Using the same char for ejectives and glottaliseds
+decodeToUmistaAltZ :: [CasedChar] -> T.Text
+decodeToUmistaAltZ = T.concat . (map $ mapChar $ mapCase outputUmistaAlt' outputUmistaAlt)
+
+-- | Alternate U'mista text output, where
+-- glottalized sonorants use the same type
+-- of apostrophe as ejective consonants,
+-- and places it __after__ the consonant,
+-- rather than before.
+--
+-- This version uses strict `Text` output.
 decodeToUmistaAlt :: [CasedChar] -> T.Text
-decodeToUmistaAlt = T.concat . (map $ mapChar $ mapCase outputUmistaAlt' outputUmistaAlt)
+decodeToUmistaAlt xs = decodeToUmistaAltZ $ decodeToUmistaYnew [] $ groupBy isSameCaseType xs
 
 decodeToUmistaYold :: [CasedChar] -> T.Text
 decodeToUmistaYold xs = decodeToUmistaMain $ concat $ decodeToUmistaY' $ groupBy isSameCaseType xs
---  where chrs = groupBy isSameCaseType xs
--- asdfzxcv
 
 -- Taking the initial glottal stop into account
 decodeToUmistaY :: [CasedChar] -> T.Text
@@ -262,6 +277,9 @@ decodeToUmistaYnew acc ((x@(Kwak z1) : y@(Kwak z2) : xs) : xss)
     | otherwise                            = ((decodeToUmistaYnew ((x:y:xs):acc) xss))
 decodeToUmistaYnew acc (xs : xss) = (decodeToUmistaYnew (xs:acc) xss)
 
+-- Set up glottal stops.
+setupGlottal :: [CasedChar] -> [CasedChar]
+setupGlottal xs = decodeToUmistaYnew [] $ groupBy isSameCaseType xs
 
 --------------------------------------------
 -- Using Builders
@@ -316,7 +334,6 @@ outputUmista2 I   = "i"
 outputUmista2 O   = "o"
 outputUmista2 U   = "u"
 outputUmista2 AU  = "a̱"
--- asdfzxcv
 
 -- Title Case
 outputUmista2' :: KwakLetter -> TL.Builder
@@ -368,7 +385,6 @@ outputUmista2' I   = "I"
 outputUmista2' O   = "O"
 outputUmista2' U   = "U"
 outputUmista2' AU  = "A\x331"
--- asdfzxcv
 
 -- Builder-Based Upper Case
 outputUmista2'' :: KwakLetter -> TL.Builder
@@ -420,7 +436,6 @@ outputUmista2'' I   = "I"
 outputUmista2'' O   = "O"
 outputUmista2'' U   = "U"
 outputUmista2'' AU  = "A\x331"
--- asdfzxcv
 
 outputUmistaAlt2 :: KwakLetter -> TL.Builder
 outputUmistaAlt2 MY = "m\x313"
@@ -438,15 +453,37 @@ outputUmistaAlt2' JY = "Y\x313"
 outputUmistaAlt2' WY = "W\x313"
 outputUmistaAlt2' x  = outputUmista2' x
 
+-- | Standard U'mista text output.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToUmista2 :: [CasedChar] -> T.Text
-decodeToUmista2 = TL.toStrict . decodeToUmistaLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmista2' outputUmista2))
+decodeToUmista2 = TL.toStrict . decodeToUmistaLazy
 
+-- | Standard U'mista text output.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToUmistaLazy :: [CasedChar] -> TL.Text
-decodeToUmistaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmista2' outputUmista2))
+decodeToUmistaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmista2' outputUmista2)) . setupGlottal
 
+-- | Alternate U'mista text output, where
+-- glottalized sonorants use the same type
+-- of apostrophe as ejective consonants,
+-- and places it __after__ the consonant,
+-- rather than before.
+--
+-- This version uses strict `Text` output with
+-- lazy `TL.Builder`s as an intermediate.
 decodeToUmistaAlt2 :: [CasedChar] -> T.Text
-decodeToUmistaAlt2 = TL.toStrict . decodeToUmistaAltLazy -- TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmista2' outputUmista2))
+decodeToUmistaAlt2 = TL.toStrict . decodeToUmistaAltLazy
 
+-- | Alternate U'mista text output, where
+-- glottalized sonorants use the same type
+-- of apostrophe as ejective consonants,
+-- and places it __after__ the consonant,
+-- rather than before.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToUmistaAltLazy :: [CasedChar] -> TL.Text
-decodeToUmistaAltLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmistaAlt2' outputUmistaAlt2))
+decodeToUmistaAltLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputUmistaAlt2' outputUmistaAlt2)) . setupGlottal
 
