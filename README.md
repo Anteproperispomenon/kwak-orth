@@ -34,6 +34,11 @@ To use the simple conversion, first you'll have to compile it
       try running `stack run kwak-orth-exe -- ...`
       instead.
 
+For information on how to run the program in command-line/terminal/bash
+mode, run `stack run -- --help` in the library or else run
+`kwak-orth-exe --help` if on Windows, or `./kwak-orth-exe --help`
+if on Unix-like systems.
+
 ### Compiling
 
 To compile this library, you will need the Haskell Stack
