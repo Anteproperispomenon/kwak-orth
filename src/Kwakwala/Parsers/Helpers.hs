@@ -17,10 +17,12 @@ codepoints count as apostrophes.
 
 module Kwakwala.Parsers.Helpers
   ( parsePipe
+  , satisfyMaybe
   ) where
 
 import Data.Attoparsec.Text qualified as AT
 import Data.Text            qualified as T
+import Data.Functor (($>))
 import Control.Monad
 import Control.Applicative
 import Kwakwala.Sounds
@@ -30,3 +32,11 @@ parsePipe :: AT.Parser CasedChar
 parsePipe = Punct <$> ((AT.char '|') `comb1` (AT.takeWhile1 (/= '|')) `comb2` (AT.char '|'))
     where comb1 = liftM2 (T.cons)
           comb2 = liftM2 (T.snoc)
+
+-- | Consume a character if the next character
+-- satisfies a predicate.
+satisfyMaybe :: (Char -> Bool) -> AT.Parser (Maybe Char)
+satisfyMaybe p = (fx <$> AT.peekChar) >>= (maybe (return Nothing) (\x -> AT.anyChar $> Just x))
+    where fx Nothing  = Nothing
+          fx (Just x) = if (p x) then (Just x) else Nothing
+

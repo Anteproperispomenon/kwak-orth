@@ -1,8 +1,20 @@
+{-|
+Module      : Kwakwala.Parsers.Boas
+Description : Parser for texts written in Boas's orthographies.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This module has parsers that should cover
+most orthographies that Franz Boas has used.
+Since Boas's orthography isn't as phonemic
+as most other orthographies, it has more
+characters than others. This makes it more
+difficult to convert to Boas than converting
+from Boas.
+-}
+
 module Kwakwala.Parsers.Boas
-    ( KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
-    , encodeFromBoas
+    ( encodeFromBoas
     , parseBoas
     ) where
 
@@ -20,6 +32,7 @@ import Data.List
 import Data.Char
 
 import Kwakwala.Sounds
+import Kwakwala.Parsers.Helpers
 
 import Data.Either
 import Data.Maybe
@@ -75,16 +88,6 @@ isEject :: Char -> Bool
 isEject = (== '!')
 
 -------------------------------------------
--- Helper Parsers
-
--- Consume a character if the next character
--- satisfies a predicate.
-satisfyMaybe :: (Char -> Bool) -> AT.Parser (Maybe Char)
-satisfyMaybe p = (fx <$> AT.peekChar) >>= (maybe (return Nothing) (\x -> AT.anyChar $> Just x))
-    where fx Nothing  = Nothing
-          fx (Just x) = if (p x) then (Just x) else Nothing
-
--------------------------------------------
 -- Final Parsers
 
 -- Handles start of words,
@@ -101,21 +104,16 @@ parseBoasWord' ltr
           caseOf (Min _) = Min
 
 parseBoasLetter :: AT.Parser CasedLetter
-parseBoasLetter = AT.choice [parseA,parseE,parseI,parseO,parseU,parseAU
-                            ,parseY,parseTL
-                            ,parseQ
-                            ,parseK,parseG,parseX
-                            ,parseP,parseT,parseM,parseN
-                            ,parseL,parseW,parseY,parseB,parseH
-                            ,parseD,parseLH,parseJ,parseS
-                            ,parseZ
-                            ]
-
--- For Parsing 'Escaped' Text
-parsePipe :: AT.Parser CasedChar
-parsePipe = Punct <$> ((AT.char '|') `comb1` (AT.takeWhile1 (/= '|')) `comb2` (AT.char '|'))
-    where comb1 = liftM2 (T.cons)
-          comb2 = liftM2 (T.snoc)
+parseBoasLetter = AT.choice 
+  [parseA,parseE,parseI,parseO,parseU,parseAU
+  ,parseY,parseTL
+  ,parseQ
+  ,parseK,parseG,parseX
+  ,parseP,parseT,parseM,parseN
+  ,parseL,parseW,parseY,parseB,parseH
+  ,parseD,parseLH,parseJ,parseS
+  ,parseZ
+  ]
 
 -- These next 5 functions are all from
 -- the Umista parser
@@ -128,9 +126,16 @@ parseBoasChar = (Kwak <$> parseBoasLetter) <|> parsePipe <|> parsePuncts <|> (Pu
 parseBoasMain :: AT.Parser [CasedChar]
 parseBoasMain = (map Kwak <$> parseBoasWord) <|> ((:[]) <$> parsePipe) <|> ((:[]) <$> parsePuncts) <|> ((:[]) <$> Punct <$> T.singleton <$> AT.anyChar)
 
+-- | Parser for Boas orthographies for Kwak'wala.
+-- Use this together with `AT.parseOnly` or similar
+-- functions if you want error messages.
 parseBoas :: AT.Parser [CasedChar]
 parseBoas = concat <$> AT.many1 parseBoasMain
 
+-- | Direct encoder for Boas's othographies.
+-- Note that if the parser runs into any errors,
+-- this just returns an empty list. If you want
+-- error messages, use `parseBoas`.
 encodeFromBoas :: T.Text -> [CasedChar]
 encodeFromBoas txt = fixVowels $ fromRight [] $ AT.parseOnly parseBoas txt
 
