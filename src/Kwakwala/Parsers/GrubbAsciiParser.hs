@@ -1,3 +1,26 @@
+{-|
+Module      : Kwakwala.Parsers.Umista
+Description : Parser for the Grubb-ASCII orthography
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
+
+This is the module for parsing the Grubb-ASCII
+orthography. This orthography is a modified
+version of the original Grubb orthography
+(which is related to the U'mista orthography),
+that has been changed to make it encodeable in
+pure ASCII. This makes it useful for applications
+where using non-ASCII characters is considerably
+more difficult or even impossible.
+
+Inspired by Grubb's usage of "eh" to represent
+schwa and ASCII encodings of Esperanto, characters
+that are usually written with diacritics are
+instead written with an "h" following them. In
+some versions, the "h" sound is instead written
+as "j" to prevent overlap/clashes.
+-}
+
 module Kwakwala.Parsers.GrubbAsciiParser
     ( encodeFromGrubbAscii
     , parseGrubbAscii
@@ -6,13 +29,6 @@ module Kwakwala.Parsers.GrubbAsciiParser
 import Data.Attoparsec.Text qualified as AT
 
 import Data.Text          qualified as T
-import Data.Text.IO       qualified as T
-import Data.Text.Encoding qualified as T
-
--- import qualified Data.Text.Lazy         as TL
--- import qualified Data.Text.Lazy.Builder as TL
-
--- import qualified TextUTF8 as TU
 
 import Control.Monad
 import Control.Applicative
@@ -25,10 +41,6 @@ import Kwakwala.Sounds
 import Kwakwala.Parsers.Helpers
 
 import Data.Either
-
-import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 -- These aren't really necessary;
 -- They're just extras
@@ -52,6 +64,9 @@ isW :: Char -> Bool
 isW = isLabial
 
 -- To allow for more possibilities
+-- Note: this is only for the 'h'
+-- that is used as a modifier. It
+-- is NOT used for the /h/ phoneme.
 isH :: Char -> Bool
 isH 'h' = True
 isH 'H' = True
@@ -435,35 +450,28 @@ parseGrubbChar = (Kwak <$> parseGrubbLetter) <|> parsePipe <|> (Punct <$> T.sing
 parseGrubbMain :: AT.Parser [CasedChar]
 parseGrubbMain = (map Kwak <$> parseGrubbWord) <|> ((:[]) <$> parsePipe) <|> ((:[]) <$> parsePuncts) <|> ((:[]) <$> Punct <$> T.singleton <$> AT.anyChar)
 
+-- | `AT.Parser` for (most) Grubb-ASCII variants
+--
+-- Use this function together with functions
+-- like `AT.parseOnly` if you want error messages.
+-- Otherwise, just use `encodeFromGrubbAscii`.
+--
+-- Note that this doesn't work on variants of 
+-- Grubb-ASCII where the /j/ phoneme (usually
+-- written as "y") is written as "j".
 parseGrubbAscii :: AT.Parser [CasedChar]
 parseGrubbAscii = concat <$> AT.many1 parseGrubbMain
--- parseGrubb = AT.many1 parseGrubbCharNew
 
+-- | Direct encoder for (most) Grubb-ASCII variants.
+--
+-- Note that this doesn't work on variants of 
+-- Grubb-ASCII where the /j/ phoneme (usually
+-- written as "y") is written as "j".
+--
+-- Note that if the parser runs into any errors,
+-- this just returns an empty list. If you want
+-- error messages, use `parseGrubbAscii` together
+-- with `AT.parseOnly` or other `AT.Parser` runners.
 encodeFromGrubbAscii :: T.Text -> [CasedChar]
 encodeFromGrubbAscii txt = fromRight [] $ AT.parseOnly parseGrubbAscii txt
-
-
-{-
-parseGrubbWordA :: AT.Parser CasedWord
-parseGrubbWordA = parseGrubbLetter >>= parseGrubbWordA'
-
-parseGrubbWordA' :: CasedLetter -> AT.Parser CasedWord
-parseGrubbWordA' ltr
-    | (isKwkVow' ltr) = KwakW <$> ([caseOf ltr Y,ltr] ++) <$> many parseGrubbLetter
-    | otherwise       = KwakW <$> (ltr:)                  <$> many parseGrubbLetter
-    where caseOf (Maj _) = Maj
-          caseOf (Min _) = Min
--- asdfzxcv
--}
-
-
-
-
-
-
-
-
-
-
-
 

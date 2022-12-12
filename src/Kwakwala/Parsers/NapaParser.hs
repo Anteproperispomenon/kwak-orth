@@ -1,34 +1,35 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Kwakwala.Parsers.NapaParser
+Description : Parser for the Southern/NAPA Orthography.
+Copyright   : (c) David Wilson, 2022
+License     : BSD-3
 
--- asdfzxcv
+This is the module for parsing the "Southern"
+Kwak'wala orthography, commonly referred to 
+as the NAPA orthography. For more information
+on this orthography, see
+<http://www.languagegeek.com/wakashan/kwakwala.html>.
+-}
+
 
 module Kwakwala.Parsers.NapaParser
-    ( KwakLetter(..)
-    , CasedLetter(..)
-    , CasedChar(..)
-    , encodeFromNapa
-    , parseNapa
+    -- * Direct Encoders
+    ( encodeFromNapa
     , encodeFromNAPA
+    -- * Parsers
+    , parseNapa
     , parseNAPA
-    , parseNapaOld
+    -- * Old Versions
     , encodeFromNapaOld
+    , parseNapaOld
     ) where
--- asdfzxcv
 
 import Data.Attoparsec.Text qualified as AT
 
 import Data.Text          qualified as T
-import Data.Text.IO       qualified as T
-import Data.Text.Encoding qualified as T
-
--- import qualified Data.Text.Lazy         as TL
--- import qualified Data.Text.Lazy.Builder as TL
-
--- import qualified TextUTF8 as TU
 
 import Control.Monad
 import Control.Applicative
-
 import Data.Functor
 import Data.List
 import Data.Char
@@ -37,10 +38,6 @@ import Kwakwala.Sounds
 import Kwakwala.Parsers.Helpers
 
 import Data.Either
-
-import System.IO
-
-fixLocale = hSetEncoding stdin utf8 >> hSetEncoding stdout utf8 >> hSetEncoding stderr utf8
 
 -- Apostrophe/Ejective Marker
 isApost :: Char -> Bool
@@ -59,6 +56,7 @@ isLabial 'ʷ' = True
 -- isLabial 'ᵂ' = True -- maybe redundant?
 isLabial  _  = False
 
+isW :: Char -> Bool
 isW = isLabial
 
 isWedge :: Char -> Bool
@@ -186,7 +184,6 @@ parseX = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'x' || x == 'X')
     ; AT.peekChar >>= parseX' b
     }
--- asdfzxcv
 
 parseX' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseX' b Nothing = return $ makeCase b X
@@ -194,14 +191,12 @@ parseX' b (Just x)
     | isWedge     x = AT.anyChar >> AT.peekChar >>= parseXU b
     | isW         x = AT.anyChar >> (return $ makeCase b XW) -- AT.peekChar >>= parseXW b
     | otherwise     = return $ makeCase b X
--- asdfzxcv
 
 parseXU :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseXU b Nothing = return $ makeCase b XU
 parseXU b (Just x)
     | isW     x = AT.anyChar >> (return $ makeCase b XUW)
     | otherwise = return $ makeCase b XU
--- asdfzxcv
 
 ---------------------------------------------------------------
 -- Parsing D
@@ -213,16 +208,13 @@ parseD = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'd' || x == 'D')
     ; AT.peekChar >>= parseD' b
     }
--- asdfzxcv
 
 -- ᶻ
-
 parseD' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseD' b Nothing = return $ makeCase b D
 parseD' b (Just x)
     | (x == 'z' || x == 'Z' || x == 'ᶻ') = AT.anyChar >> (return $ makeCase b DZ)
     | otherwise                          = return $ makeCase b D
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -231,7 +223,6 @@ parseZ = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'z' || x == 'Z' || x == 'ǳ' || x == 'Ǳ' || x == 'ǲ')
     ; return $ makeCase b DZ
     }
--- asdfzxcv
 
 ---------------------------------------------------------------
 -- Parsing B, P, T, C, and S
@@ -243,7 +234,6 @@ parseB = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'b' || x == 'B')
     ; return $ makeCase b B
     }
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -252,14 +242,12 @@ parseP = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'p' || x == 'P')
     ; AT.peekChar >>= parseP' b
     }
--- asfdzxcv
 
 parseP' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseP' b Nothing = return $ makeCase b P
 parseP' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b PY)
     | otherwise = return $ makeCase b P
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -268,14 +256,12 @@ parseT = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 't' || x == 'T')
     ; AT.peekChar >>= parseT' b
     }
--- asfdzxcv
 
 parseT' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseT' b Nothing = return $ makeCase b T
 parseT' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b TY)
     | otherwise = return $ makeCase b T
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -284,14 +270,12 @@ parseC = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'c' || x == 'C')
     ; AT.peekChar >>= parseC' b
     }
--- asfdzxcv
 
 parseC' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseC' b Nothing = return $ makeCase b TS
 parseC' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b TSY)
     | otherwise = return $ makeCase b TS
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -308,14 +292,12 @@ parseM = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'm' || x == 'M')
     ; AT.peekChar >>= parseM' b
     }
--- asfdzxcv
 
 parseM' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseM' b Nothing = return $ makeCase b M
 parseM' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b MY)
     | otherwise = return $ makeCase b M
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -324,16 +306,12 @@ parseN = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'n' || x == 'N')
     ; AT.peekChar >>= parseN' b
     }
--- asfdzxcv
 
 parseN' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseN' b Nothing = return $ makeCase b N
 parseN' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b NY)
     | otherwise = return $ makeCase b N
--- asdfzxcv
-
-
 
 ---------------------------------------------------------------
 -- Parsing J/Y, L, LH, and W
@@ -345,14 +323,12 @@ parseJ = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'y' || x == 'Y' || x == 'j' || x == 'J')
     ; AT.peekChar >>= parseJ' b
     }
--- asfdzxcv
 
 parseJ' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseJ' b Nothing = return $ makeCase b J
 parseJ' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b JY)
     | otherwise = return $ makeCase b J
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -361,14 +337,12 @@ parseL = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'l' || x == 'L')
     ; AT.peekChar >>= parseL' b
     }
--- asfdzxcv
 
 parseL' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseL' b Nothing = return $ makeCase b L
 parseL' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b LY)
     | otherwise = return $ makeCase b L
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -385,14 +359,12 @@ parseW = do
     { b <- isUpper <$> AT.satisfy (\x -> x == 'w' || x == 'W')
     ; AT.peekChar >>= parseW' b
     }
--- asfdzxcv
 
 parseW' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseW' b Nothing = return $ makeCase b W
 parseW' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b WY)
     | otherwise = return $ makeCase b W
--- asdfzxcv
 
 ---------------------------------------------------------------
 -- Parsing λ and ƛ
@@ -409,14 +381,12 @@ parseTL = do
     { b <- isUpper <$> AT.satisfy (\x -> (toLower x) == 'ƛ')
     ; AT.peekChar >>= parseTL' b
     }
--- asfdzxcv
 
 parseTL' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseTL' b Nothing = return $ makeCase b TL
 parseTL' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b TLY)
     | otherwise = return $ makeCase b TL
--- asdfzxcv
 
 ---------------------------------------------------------------
 -- Parsing ʔ and H
@@ -431,7 +401,6 @@ parseY = do
     }
     where tstm p Nothing  = False
           tstm p (Just x) = p x
--- asdfzxcv
 
 -----------------------
 -- Entry Point
@@ -467,35 +436,20 @@ parseU  = (AT.char 'u' $> Min  U) <|> (AT.char 'U' $> Maj  U)
 -- The Full Parser
 
 parseNapaLetter :: AT.Parser CasedLetter
-parseNapaLetter = AT.choice [parseA,parseE,parseI,parseO,parseU,parseAU
-                            ,parseK,parseQ,parseG,parseGUB,parseX
-                            ,parseP,parseT,parseM,parseN
-                            ,parseL,parseW,parseY,parseB,parseH
-                            ,parseD,parseLH,parseJ,parseS
-                            ,parseZ,parseDL,parseTL
-                            ,parseC
-                            ]
--- asdfzxcv
+parseNapaLetter = AT.choice 
+  [parseA,parseE,parseI,parseO,parseU,parseAU
+  ,parseK,parseQ,parseG,parseGUB,parseX
+  ,parseP,parseT,parseM,parseN
+  ,parseL,parseW,parseY,parseB,parseH
+  ,parseD,parseLH,parseJ,parseS
+  ,parseZ,parseDL,parseTL
+  ,parseC
+  ]
 
 -- Parse non-alphabetical and non-apostrophe characters
 -- until next Umista Char.
 parsePuncts :: AT.Parser CasedChar
 parsePuncts = Punct <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x || (x == '|')))
-
--- asdfzsxcv
-{-
-parsePipe :: AT.Parser CasedChar
-parsePipe = Punct <$> ((AT.satisfy isPipe) `comb1` (AT.takeWhile1 (not . isPipe)) `comb2` (AT.satisfy isPipe))
-    where comb1 = liftM2 (T.cons)
-          comb2 = liftM2 (T.snoc)
--- asdfzsxcv
-
-isPipe :: Char -> Bool
-isPipe '|' = True
-isPipe '¦' = True
--- isPipe '|' = True
-isPipe  _  = False
--}
 
 parseNapaChar :: AT.Parser CasedChar
 parseNapaChar = (Kwak <$> parseNapaLetter) <|> parsePipe <|> (Punct <$> T.singleton <$> AT.anyChar)
@@ -503,21 +457,37 @@ parseNapaChar = (Kwak <$> parseNapaLetter) <|> parsePipe <|> (Punct <$> T.single
 parseNapaCharNew :: AT.Parser CasedChar
 parseNapaCharNew = (Kwak <$> parseNapaLetter) <|> parsePipe <|> parsePuncts <|> (Punct <$> T.singleton <$> AT.anyChar)
 
+-- | `AT.Parser` for the Southern/NAPA orthography.
+--
+-- Use this function together with functions
+-- like `AT.parseOnly` if you want error messages
+-- or with `AT.parse` if you want incremental
+-- input. Otherwise, just use `encodeFromNapa`.
 parseNapa :: AT.Parser [CasedChar]
 parseNapa = AT.many1 parseNapaCharNew
 
+-- | Older version of `parseNapa`.
 parseNapaOld :: AT.Parser [CasedChar]
 parseNapaOld = AT.many1 parseNapaChar
 
+-- | Direct encoder for the Southern/NAPA orthography.
+--
+-- Note that if the parser runs into any errors,
+-- this just returns an empty list. If you want
+-- error messages, use `parseNapa` together
+-- with `AT.parseOnly` or other `AT.Parser` runners.
 encodeFromNapa :: T.Text -> [CasedChar]
 encodeFromNapa txt = fromRight [] $ AT.parseOnly parseNapa txt
 
+-- | Older version of `encodeFromNapa`.
 encodeFromNapaOld :: T.Text -> [CasedChar]
 encodeFromNapaOld txt = fromRight [] $ AT.parseOnly parseNapaOld txt
 
+-- | Synonym for `parseNapa`.
 parseNAPA :: AT.Parser [CasedChar]
 parseNAPA = parseNapa
 
+-- | Synonym for `encodeFromNapa`.
 encodeFromNAPA :: T.Text -> [CasedChar]
 encodeFromNAPA = encodeFromNapa
 

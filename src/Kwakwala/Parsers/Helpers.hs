@@ -40,3 +40,10 @@ satisfyMaybe p = (fx <$> AT.peekChar) >>= (maybe (return Nothing) (\x -> AT.anyC
     where fx Nothing  = Nothing
           fx (Just x) = if (p x) then (Just x) else Nothing
 
+{-
+isPipe :: Char -> Bool
+isPipe '|' = True
+isPipe '¦' = True
+-- isPipe '|' = True
+isPipe  _  = False
+-}
