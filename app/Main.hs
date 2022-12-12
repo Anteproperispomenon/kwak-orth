@@ -1,7 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
--- The Main file, that imports all the other stuff
-
 module Main where
 
 -----------------------------------------------
@@ -44,23 +40,21 @@ import qualified TextUTF8 as TU
 
 import Kwakwala.Sounds
 
-import Kwakwala.Parsers.Umista
-import Kwakwala.Output.UmistaOutputNew
-import Kwakwala.Parsers.NapaParser
-import Kwakwala.Output.NapaOutput
 import Kwakwala.Parsers.Boas
-
-import Kwakwala.Output.PseudoBoasOutput
-import Kwakwala.Output.Georgian
 import Kwakwala.Parsers.GeorgianParser
-
-import Kwakwala.Output.GrubbAscii
 import Kwakwala.Parsers.GrubbAsciiParser
+import Kwakwala.Parsers.NapaParser
+import Kwakwala.Parsers.Umista
 
+import Kwakwala.Output.Georgian
+import Kwakwala.Output.GrubbAscii
 import Kwakwala.Output.IPAOutput
+import Kwakwala.Output.NapaOutput
+import Kwakwala.Output.PseudoBoasOutput
+import Kwakwala.Output.UmistaOutputNew
 
 
-data OrthType = Umista | Napa | Umista2 | Boas | PseudoBoas | Georgian | Georgian2 | GrubbAscii | IPA | IPA2 deriving (Show, Eq)
+data OrthType = Umista | Napa | Umista2 | Boas | PseudoBoas | Georgian | Georgian2 | GrubbAscii | GrubbAsciiJ | IPA | IPA2 deriving (Show, Eq)
 
 data ArgInput
    = FullInput { inputFile  :: FilePath
@@ -71,7 +65,6 @@ data ArgInput
                , oldStyle   :: Bool
                , verFlag    :: Bool
                } deriving (Show,Eq)
--- asdfzxcv
 
 data ArgInput'
    = FullInput' { inputFile'  :: FilePath
@@ -82,32 +75,33 @@ data ArgInput'
                 , oldStyle'   :: Bool
                 , verFlag'    :: Bool
                 } deriving (Show,Eq)
--- asdfzxcv
 
+-- e.g.
 -- handleStuff1 (FullInput "sample_text4.txt" "sample_text4_out.txt" Napa Napa False False False)
 
 fileInput :: FilePath -> ArgInput
 fileInput inf = FullInput inf outf Umista Napa False False False
     where (fl,xt) = splitExtension inf
           outf    = fl ++ ".napa" ++ xt
--- asdfzxcv
 
+-- | Convert an `ArgInput'` to an `ArgInput` by automatically
+-- creating the output file name if it isn't specified.
 fixInput :: ArgInput' -> ArgInput
 fixInput (FullInput' inf (Just outf) inp outp ovr sty ver) = (FullInput inf outf inp outp ovr sty ver)
 fixInput (FullInput' inf Nothing     inp outp ovr sty ver) 
-    | (outp == Napa      ) = (FullInput inf (outf ".napa") inp outp ovr sty ver)
-    | (outp == Umista    ) = (FullInput inf (outf ".umst") inp outp ovr sty ver)
-    | (outp == Umista2   ) = (FullInput inf (outf ".ums2") inp outp ovr sty ver)
-    | (outp == Boas      ) = (FullInput inf (outf ".boas") inp outp ovr sty ver)
-    | (outp == PseudoBoas) = (FullInput inf (outf ".pbos") inp outp ovr sty ver)
-    | (outp == Georgian  ) = (FullInput inf (outf ".geor") inp outp ovr sty ver)
-    | (outp == Georgian2 ) = (FullInput inf (outf ".geo2") inp outp ovr sty ver)
-    | (outp == GrubbAscii) = (FullInput inf (outf ".grba") inp outp ovr sty ver)
-    | (outp == IPA       ) = (FullInput inf (outf ".ipa" ) inp outp ovr sty ver)
-    | (outp == IPA2      ) = (FullInput inf (outf ".ipa2") inp outp ovr sty ver)
+    | (outp == Napa       ) = (FullInput inf (outf ".napa") inp outp ovr sty ver)
+    | (outp == Umista     ) = (FullInput inf (outf ".umst") inp outp ovr sty ver)
+    | (outp == Umista2    ) = (FullInput inf (outf ".ums2") inp outp ovr sty ver)
+    | (outp == Boas       ) = (FullInput inf (outf ".boas") inp outp ovr sty ver)
+    | (outp == PseudoBoas ) = (FullInput inf (outf ".pbos") inp outp ovr sty ver)
+    | (outp == Georgian   ) = (FullInput inf (outf ".geor") inp outp ovr sty ver)
+    | (outp == Georgian2  ) = (FullInput inf (outf ".geo2") inp outp ovr sty ver)
+    | (outp == GrubbAscii ) = (FullInput inf (outf ".grba") inp outp ovr sty ver)
+    | (outp == GrubbAsciiJ) = (FullInput inf (outf ".grbj") inp outp ovr sty ver)
+    | (outp == IPA        ) = (FullInput inf (outf ".ipa" ) inp outp ovr sty ver)
+    | (outp == IPA2       ) = (FullInput inf (outf ".ipa2") inp outp ovr sty ver)
     where (fl,xt) = splitExtension inf
           outf x  = fl ++ x ++ xt
--- asdfzxcv
 
 fullInput :: Parser ArgInput
 fullInput = fixInput <$> fullInput'
@@ -156,6 +150,7 @@ fullInput'
                    <> "[N]APA, "           -- "\t[N]    : NAPA\n"
                    <> "[B]oas, "           -- "\t[B/PB] : (Pseudo-)Boas\n"
                    <> "[G]rubb-Ascii, "    -- "\t[G]    : Grubb-Ascii\n"
+                   <> "[J] (Grubb-Ascii-J),"
                    <> "[I]PA,  "           -- "\t[I]    : IPA \n"
                    <> "or [GR] (Georgian)" -- "\t[GR]   : Georgian\n"
                    )
@@ -175,20 +170,18 @@ fullInput'
            <> short 'v'
            <> help "Display version info of this release and all previous releases."
             )
--- asdfzxcv
 
 -- strOptionMaybe = optional . strOption
 -- strOptionMaybe :: Mod OptionFields String -> Parser (Maybe String)
 -- strOptionMaybe fld =  f <$> strOption fld
 --     where f ""  = Nothing
 --           f str = Just str
--- asdfzcxv
 
 parseOrth' :: ReadM OrthType
 parseOrth' = eitherReader (AT.parseOnly parseOrth . T.pack)
 
 parseOrth :: AT.Parser OrthType
-parseOrth = parseOrthNapa <|> parseOrthUmista <|> parseOrthPseudoBoas <|> parseOrthBoas <|> parseOrthGeorgian <|> parseOrthGrubb <|> parseOrthIPA
+parseOrth = parseOrthNapa <|> parseOrthUmista <|> parseOrthPseudoBoas <|> parseOrthBoas <|> parseOrthGeorgian <|> parseOrthGrubb <|> parseOrthGrubbJ <|> parseOrthIPA
 
 parseOrthNapa :: AT.Parser OrthType
 parseOrthNapa = (AT.choice ["n","N","NAPA","napa","Napa"]) $> Napa
@@ -199,7 +192,6 @@ parseOrthUmista = do
     ; x <- AT.peekChar
     ; if (x == (Just '2')) then (AT.anyChar $> Umista2) else (return Umista)
     }
--- asdfzxcv
 
 parseOrthPseudoBoas :: AT.Parser OrthType
 parseOrthPseudoBoas = (AT.choice ["pb","PB","PBoas","pboas","pseudoboas","pseudo-boas","Pseudo-Boas"]) $> PseudoBoas
@@ -213,7 +205,6 @@ parseOrthIPA = do
     ; x <- AT.peekChar
     ; if (x == (Just '2')) then (AT.anyChar $> IPA2) else (return IPA)
     }
--- asdfzxcv
 
 parseOrthGeorgian :: AT.Parser OrthType
 parseOrthGeorgian = do 
@@ -221,12 +212,15 @@ parseOrthGeorgian = do
     ; x <- AT.peekChar
     ; if (x == (Just '2')) then (AT.anyChar $> Georgian2) else (return Georgian)
     }
--- asdfzxcv
 
 parseOrthGrubb :: AT.Parser OrthType
 parseOrthGrubb = (AT.choice ["g","G","Grubb","grubb", "GRUBB", "Grubb-Ascii", "grubb-ascii"]) $> GrubbAscii
 
-sentence1 = "ga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
+parseOrthGrubbJ :: AT.Parser OrthType
+parseOrthGrubbJ = (AT.choice ["j","J","GJ","gj"]) $> GrubbAsciiJ
+
+-- example sentence
+-- sentence1 = "ga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
 
 mainParser :: Parser ArgInput
 mainParser = fullInput -- <|> dragInput
@@ -263,7 +257,6 @@ main = do
     ; withFile outf WriteMode (`TU.hPutStr` otxt)
     ; putStrLn "Successfully converted/fixed file [in theory]."
     }
--- asdfzxcv
 
 ----------------------------------
 -- Version Info
@@ -351,7 +344,6 @@ versionInfo
         ]
        )
       ]
--- asdfzxcv
 
 showVersionInfo :: (String,[String]) -> IO ()
 showVersionInfo (vr,xs) = do
@@ -361,7 +353,6 @@ showVersionInfo (vr,xs) = do
     ; mapM_ (\str -> putStrLn $ "-- " ++ str) xs
     ; putStrLn ""
     }
--- asdfxzcv
 
 -- Note:
 --    (`f` x)
@@ -371,26 +362,23 @@ showVersionInfo (vr,xs) = do
 -- Gets the contents of a file
 -- and encodes it.
 handleStuff1 :: ArgInput -> Handle -> IO T.Text
--- handleStuff1 (FullInput _ _ Napa _ _) _      = die "Napa input is not yet supported."
--- handleStuff1 (FullInput _ _       Boas _ _ _) _ = die        "Boas input is not yet supported."
--- handleStuff1 (FullInput _ _ PseudoBoas _ _ _) _ = die "Pseudo-Boas input is not yet supported."
--- handleStuff1 (FullInput _ _ GrubbAscii _ _ _ _) _ = die "Grubb-Ascii input is not yet supported."
 handleStuff1 (FullInput _ _ enc dec _ sty _) hinp = do
     { itxt <- TU.hGetContents hinp
     ; return $ decodeTo dec $ encodeFrom enc sty $ itxt
     }
 
 encodeFrom :: OrthType -> Bool -> T.Text -> [CasedChar]
-encodeFrom Umista     = encodeFromUmistaType
-encodeFrom Umista2    = encodeFromUmistaType
-encodeFrom Napa       = encodeFromNapaType
-encodeFrom Boas       = \_ -> encodeFromBoas
-encodeFrom PseudoBoas = \_ -> encodeFromBoas
-encodeFrom Georgian   = \_ -> encodeFromGeorgian
-encodeFrom Georgian2  = \_ -> encodeFromGeorgian
-encodeFrom GrubbAscii = \_ -> encodeFromGrubbAscii
-encodeFrom IPA        = \_ -> encodeFromGrubbAscii
-encodeFrom IPA2       = \_ -> encodeFromGrubbAscii
+encodeFrom Umista      = encodeFromUmistaType
+encodeFrom Umista2     = encodeFromUmistaType
+encodeFrom Napa        = encodeFromNapaType
+encodeFrom Boas        = \_ -> encodeFromBoas
+encodeFrom PseudoBoas  = \_ -> encodeFromBoas
+encodeFrom Georgian    = \_ -> encodeFromGeorgian
+encodeFrom Georgian2   = \_ -> encodeFromGeorgian
+encodeFrom GrubbAscii  = \_ -> encodeFromGrubbAscii
+encodeFrom GrubbAsciiJ = \_ -> encodeFromGrubbAscii
+encodeFrom IPA         = \_ -> encodeFromGrubbAscii
+encodeFrom IPA2        = \_ -> encodeFromGrubbAscii
 
 encodeFromUmistaType :: Bool -> T.Text -> [CasedChar]
 encodeFromUmistaType False = encodeFromUmista
@@ -401,14 +389,15 @@ encodeFromNapaType False = encodeFromNapa
 encodeFromNapaType True  = encodeFromNapaOld
 
 decodeTo :: OrthType -> [CasedChar] -> T.Text
-decodeTo Umista     = decodeToUmista
-decodeTo Umista2    = decodeToUmistaAlt
-decodeTo Napa       = decodeToNapa
-decodeTo Boas       = decodeToPseudoBoas
-decodeTo PseudoBoas = decodeToPseudoBoas
-decodeTo Georgian   = decodeToGeorgianAlt
-decodeTo Georgian2  = decodeToGeorgian
-decodeTo GrubbAscii = decodeToGrubbAscii
-decodeTo IPA        = decodeToIpa
-decodeTo IPA2       = decodeToIpaAlt
+decodeTo Umista      = decodeToUmista
+decodeTo Umista2     = decodeToUmistaAlt
+decodeTo Napa        = decodeToNapa
+decodeTo Boas        = decodeToPseudoBoas
+decodeTo PseudoBoas  = decodeToPseudoBoas
+decodeTo Georgian    = decodeToGeorgianAlt
+decodeTo Georgian2   = decodeToGeorgian
+decodeTo GrubbAscii  = decodeToGrubbAscii
+decodeTo GrubbAsciiJ = decodeToGrubbAsciiJ
+decodeTo IPA         = decodeToIpa
+decodeTo IPA2        = decodeToIpaAlt
 
