@@ -49,6 +49,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances
@@ -77,6 +78,7 @@ executable kwak-orth-exe
   hs-source-dirs:
       app
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances
@@ -110,6 +112,7 @@ test-suite kwak-orth-test
   hs-source-dirs:
       test
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances

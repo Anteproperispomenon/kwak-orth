@@ -28,6 +28,7 @@ dependencies:
 - text
 
 default-extensions:
+- BlockArguments
 - DerivingStrategies
 - ExplicitForAll
 - FlexibleInstances

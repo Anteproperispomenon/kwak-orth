@@ -365,9 +365,16 @@ parseY' Nothing = return (Min Y)
 parseY' (Just x)
     | (x == 'm' || x == 'M') = AT.anyChar >> (return $ makeCase b MY)
     | (x == 'n' || x == 'N') = AT.anyChar >> (return $ makeCase b NY)
-    | (x == 'l' || x == 'L') = AT.anyChar >> (return $ makeCase b LY)
     | (x == 'y' || x == 'Y') = AT.anyChar >> (return $ makeCase b JY)
     | (x == 'w' || x == 'W') = AT.anyChar >> (return $ makeCase b WY)
+    | (x == 'l' || x == 'L') = do
+        -- If the following character is an H, it should
+        -- be interpretted as Y + LH, not LY + H.
+        { AT.anyChar 
+        ; y <- AT.peekChar
+        ; when (liftP isH y) (fail "\"'lh\" error")
+        ; return $ makeCase b LY
+        } <|> (return $ makeCase b Y)
     | otherwise              = return $ makeCase b Y -- i.e., the glottal stop takes on the case of the following letter
     where b = isUpper x
 

@@ -378,6 +378,11 @@ parseA = do
 -- a̱
 -- x̱
 
+-- 'a̱' == '\x0101'
+-- 'Ā' == '\x0100'
+parseAU :: AT.Parser CasedLetter
+parseAU = (AT.char '\x0101' $> Min AU) <|> (AT.char '\x0100' $> Maj AU)
+
 parseE :: AT.Parser CasedLetter
 parseE = (AT.char 'e' $> Min E) <|> (AT.char 'E' $> Maj E)
 
@@ -417,7 +422,7 @@ parseUmistaWordA' ltr
           caseOf (Min _) = Min
 
 parseUmistaLetter :: AT.Parser CasedLetter
-parseUmistaLetter = AT.choice [parseA,parseE,parseI,parseO,parseU
+parseUmistaLetter = AT.choice [parseA,parseAU,parseE,parseI,parseO,parseU
 --                            ,parseSpace
                               ,parseK,parseG,parseKUN,parseGUN,parseX
                               ,parseP,parseT,parseM,parseN
