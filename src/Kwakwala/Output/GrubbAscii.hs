@@ -54,6 +54,7 @@ import Data.Text.Lazy         qualified as TL
 import Data.Text.Lazy.Builder qualified as TL
 
 import Data.List (groupBy)
+import Data.String
 
 import Kwakwala.Sounds
 
@@ -61,110 +62,132 @@ import Kwakwala.Sounds
 -- Using Standard Strict Text
 
 -- | Output a lower-case Grubb-ASCII character.
+outputGrubbAsciiX :: (IsString a) => KwakLetter -> a
+outputGrubbAsciiX M   = "m"
+outputGrubbAsciiX MY  = "'m"
+outputGrubbAsciiX N   = "n"
+outputGrubbAsciiX NY  = "'n"
+outputGrubbAsciiX P   = "p"
+outputGrubbAsciiX T   = "t"
+outputGrubbAsciiX B   = "b"
+outputGrubbAsciiX D   = "d"
+outputGrubbAsciiX PY  = "p'"
+outputGrubbAsciiX TY  = "t'"
+outputGrubbAsciiX TS  = "ts"
+outputGrubbAsciiX TL  = "tl"
+outputGrubbAsciiX DZ  = "dz"
+outputGrubbAsciiX DL  = "dl"
+outputGrubbAsciiX TSY = "ts'" -- note this
+outputGrubbAsciiX TLY = "tl'" -- note this
+outputGrubbAsciiX S   = "s"
+outputGrubbAsciiX LH  = "lh"
+outputGrubbAsciiX L   = "l"
+outputGrubbAsciiX LY  = "'l"
+outputGrubbAsciiX J   = "y"
+outputGrubbAsciiX JY  = "'y"
+outputGrubbAsciiX K   = "k"
+outputGrubbAsciiX KW  = "kw"
+outputGrubbAsciiX G   = "g"
+outputGrubbAsciiX GW  = "gw"
+outputGrubbAsciiX KY  = "k'"
+outputGrubbAsciiX KWY = "kw'"
+outputGrubbAsciiX Q   = "kh"
+outputGrubbAsciiX QW  = "khw"
+outputGrubbAsciiX GU  = "gh"
+outputGrubbAsciiX GUW = "ghw"
+outputGrubbAsciiX QY  = "kh'"
+outputGrubbAsciiX QWY = "khw'"
+outputGrubbAsciiX X   = "x"
+outputGrubbAsciiX XW  = "xw"
+outputGrubbAsciiX XU  = "xh"
+outputGrubbAsciiX XUW = "xhw"
+outputGrubbAsciiX W   = "w"
+outputGrubbAsciiX WY  = "'w"
+outputGrubbAsciiX Y   = "'"
+outputGrubbAsciiX H   = "h"
+outputGrubbAsciiX A   = "a"
+outputGrubbAsciiX E   = "eh"
+outputGrubbAsciiX I   = "i"
+outputGrubbAsciiX O   = "o"
+outputGrubbAsciiX U   = "u"
+outputGrubbAsciiX AU  = "e"
+
+outputGrubbAsciiOldX :: (IsString a) => KwakLetter -> a
+outputGrubbAsciiOldX MY  = "m'"
+outputGrubbAsciiOldX NY  = "n'"
+outputGrubbAsciiOldX LY  = "l'"
+outputGrubbAsciiOldX JY  = "y'"
+outputGrubbAsciiOldX WY  = "w'"
+outputGrubbAsciiOldX c = outputGrubbAsciiX c
+
 outputGrubbAscii :: KwakLetter -> T.Text
-outputGrubbAscii M   = "m"
-outputGrubbAscii MY  = "m'"
-outputGrubbAscii N   = "n"
-outputGrubbAscii NY  = "n'"
-outputGrubbAscii P   = "p"
-outputGrubbAscii T   = "t"
-outputGrubbAscii B   = "b"
-outputGrubbAscii D   = "d"
-outputGrubbAscii PY  = "p'"
-outputGrubbAscii TY  = "t'"
-outputGrubbAscii TS  = "ts"
-outputGrubbAscii TL  = "tl"
-outputGrubbAscii DZ  = "dz"
-outputGrubbAscii DL  = "dl"
-outputGrubbAscii TSY = "ts'" -- note this
-outputGrubbAscii TLY = "tl'" -- note this
-outputGrubbAscii S   = "s"
-outputGrubbAscii LH  = "lh"
-outputGrubbAscii L   = "l"
-outputGrubbAscii LY  = "l'"
-outputGrubbAscii J   = "y"
-outputGrubbAscii JY  = "y'"
-outputGrubbAscii K   = "k"
-outputGrubbAscii KW  = "kw"
-outputGrubbAscii G   = "g"
-outputGrubbAscii GW  = "gw"
-outputGrubbAscii KY  = "k'"
-outputGrubbAscii KWY = "kw'"
-outputGrubbAscii Q   = "kh"
-outputGrubbAscii QW  = "khw"
-outputGrubbAscii GU  = "gh"
-outputGrubbAscii GUW = "ghw"
-outputGrubbAscii QY  = "kh'"
-outputGrubbAscii QWY = "khw'"
-outputGrubbAscii X   = "x"
-outputGrubbAscii XW  = "xw"
-outputGrubbAscii XU  = "xh"
-outputGrubbAscii XUW = "xhw"
-outputGrubbAscii W   = "w"
-outputGrubbAscii WY  = "w'"
-outputGrubbAscii Y   = "'"
-outputGrubbAscii H   = "h"
-outputGrubbAscii A   = "a"
-outputGrubbAscii E   = "eh"
-outputGrubbAscii I   = "i"
-outputGrubbAscii O   = "o"
-outputGrubbAscii U   = "u"
-outputGrubbAscii AU  = "e"
+outputGrubbAscii c = outputGrubbAsciiX c
 
 outputGrubbAsciiJ :: KwakLetter -> T.Text
 outputGrubbAsciiJ H = "j"
 outputGrubbAsciiJ x = outputGrubbAscii x
 
 -- | Output an upper-case Grubb-ASCII character.
+outputGrubbAsciiX' :: (IsString a) => KwakLetter -> a
+outputGrubbAsciiX' M   = "M"
+outputGrubbAsciiX' MY  = "'M"
+outputGrubbAsciiX' N   = "N"
+outputGrubbAsciiX' NY  = "'N"
+outputGrubbAsciiX' P   = "P"
+outputGrubbAsciiX' T   = "T"
+outputGrubbAsciiX' B   = "B"
+outputGrubbAsciiX' D   = "D"
+outputGrubbAsciiX' PY  = "P'"
+outputGrubbAsciiX' TY  = "T'"
+outputGrubbAsciiX' TS  = "Ts"
+outputGrubbAsciiX' TL  = "Tl"
+outputGrubbAsciiX' DZ  = "Dz"
+outputGrubbAsciiX' DL  = "Dl"
+outputGrubbAsciiX' TSY = "Ts'"
+outputGrubbAsciiX' TLY = "Tl'"
+outputGrubbAsciiX' S   = "S"
+outputGrubbAsciiX' LH  = "Lh"
+outputGrubbAsciiX' L   = "L"
+outputGrubbAsciiX' LY  = "'L"
+outputGrubbAsciiX' J   = "Y"
+outputGrubbAsciiX' JY  = "'Y"
+outputGrubbAsciiX' K   = "K"
+outputGrubbAsciiX' KW  = "Kw"
+outputGrubbAsciiX' G   = "G"
+outputGrubbAsciiX' GW  = "Gw"
+outputGrubbAsciiX' KY  = "K'"
+outputGrubbAsciiX' KWY = "Kw'"
+outputGrubbAsciiX' Q   = "Kh"
+outputGrubbAsciiX' QW  = "Khw"
+outputGrubbAsciiX' GU  = "Gh"
+outputGrubbAsciiX' GUW = "Ghw"
+outputGrubbAsciiX' QY  = "Kh'"
+outputGrubbAsciiX' QWY = "Khw'"
+outputGrubbAsciiX' X   = "X"
+outputGrubbAsciiX' XW  = "Xw"
+outputGrubbAsciiX' XU  = "Xh"
+outputGrubbAsciiX' XUW = "Xhw"
+outputGrubbAsciiX' W   = "W"
+outputGrubbAsciiX' WY  = "'W"
+outputGrubbAsciiX' Y   = "'"
+outputGrubbAsciiX' H   = "H"
+outputGrubbAsciiX' A   = "A"
+outputGrubbAsciiX' E   = "Eh"
+outputGrubbAsciiX' I   = "I"
+outputGrubbAsciiX' O   = "O"
+outputGrubbAsciiX' U   = "U"
+outputGrubbAsciiX' AU  = "E"
+
+outputGrubbAsciiOldX' :: (IsString a) => KwakLetter -> a
+outputGrubbAsciiOldX' MY  = "M'"
+outputGrubbAsciiOldX' NY  = "N'"
+outputGrubbAsciiOldX' LY  = "L'"
+outputGrubbAsciiOldX' JY  = "Y'"
+outputGrubbAsciiOldX' WY  = "W'"
+outputGrubbAsciiOldX' c = outputGrubbAsciiX c
+
 outputGrubbAscii' :: KwakLetter -> T.Text
-outputGrubbAscii' M   = "M"
-outputGrubbAscii' MY  = "M'"
-outputGrubbAscii' N   = "N"
-outputGrubbAscii' NY  = "N'"
-outputGrubbAscii' P   = "P"
-outputGrubbAscii' T   = "T"
-outputGrubbAscii' B   = "B"
-outputGrubbAscii' D   = "D"
-outputGrubbAscii' PY  = "P'"
-outputGrubbAscii' TY  = "T'"
-outputGrubbAscii' TS  = "Ts"
-outputGrubbAscii' TL  = "Tl"
-outputGrubbAscii' DZ  = "Dz"
-outputGrubbAscii' DL  = "Dl"
-outputGrubbAscii' TSY = "Ts'"
-outputGrubbAscii' TLY = "Tl'"
-outputGrubbAscii' S   = "S"
-outputGrubbAscii' LH  = "Lh"
-outputGrubbAscii' L   = "L"
-outputGrubbAscii' LY  = "L'"
-outputGrubbAscii' J   = "Y"
-outputGrubbAscii' JY  = "Y'"
-outputGrubbAscii' K   = "K"
-outputGrubbAscii' KW  = "Kw"
-outputGrubbAscii' G   = "G"
-outputGrubbAscii' GW  = "Gw"
-outputGrubbAscii' KY  = "K'"
-outputGrubbAscii' KWY = "Kw'"
-outputGrubbAscii' Q   = "Kh"
-outputGrubbAscii' QW  = "Khw"
-outputGrubbAscii' GU  = "Gh"
-outputGrubbAscii' GUW = "Ghw"
-outputGrubbAscii' QY  = "Kh'"
-outputGrubbAscii' QWY = "Khw'"
-outputGrubbAscii' X   = "X"
-outputGrubbAscii' XW  = "Xw"
-outputGrubbAscii' XU  = "Xh"
-outputGrubbAscii' XUW = "Xhw"
-outputGrubbAscii' W   = "W"
-outputGrubbAscii' WY  = "W'"
-outputGrubbAscii' Y   = "'"
-outputGrubbAscii' H   = "H"
-outputGrubbAscii' A   = "A"
-outputGrubbAscii' E   = "Eh"
-outputGrubbAscii' I   = "I"
-outputGrubbAscii' O   = "O"
-outputGrubbAscii' U   = "U"
-outputGrubbAscii' AU  = "E"
+outputGrubbAscii' c = outputGrubbAsciiX' c
 
 outputGrubbAsciiJ' :: KwakLetter -> T.Text
 outputGrubbAsciiJ' H = "J"
@@ -236,6 +259,7 @@ setupGlottal xs = decodeToGrubbAscii' [] $ groupBy isSameCaseType xs
 -- Using Builders
 
 -- Builder-based lower-case letter output
+{-
 outputGrubbAscii2 :: KwakLetter -> TL.Builder
 outputGrubbAscii2 M   = "m"
 outputGrubbAscii2 MY  = "m'"
@@ -285,11 +309,16 @@ outputGrubbAscii2 I   = "i"
 outputGrubbAscii2 O   = "o"
 outputGrubbAscii2 U   = "u"
 outputGrubbAscii2 AU  = "e"
+-}
+
+outputGrubbAscii2 :: KwakLetter -> TL.Builder
+outputGrubbAscii2 c = outputGrubbAsciiX c
 
 outputGrubbAsciiJ2 :: KwakLetter -> TL.Builder
 outputGrubbAsciiJ2 H = "j"
 outputGrubbAsciiJ2 x = outputGrubbAscii2 x
 
+{-
 outputGrubbAscii2' :: KwakLetter -> TL.Builder
 outputGrubbAscii2' M   = "M"
 outputGrubbAscii2' MY  = "M'"
@@ -339,6 +368,10 @@ outputGrubbAscii2' I   = "I"
 outputGrubbAscii2' O   = "O"
 outputGrubbAscii2' U   = "U"
 outputGrubbAscii2' AU  = "E"
+-}
+
+outputGrubbAscii2' :: KwakLetter -> TL.Builder
+outputGrubbAscii2' c = outputGrubbAsciiX' c
 
 outputGrubbAsciiJ2' :: KwakLetter -> TL.Builder
 outputGrubbAsciiJ2' H = "J"
