@@ -14,21 +14,25 @@ where using non-ASCII characters is considerably
 more difficult or even impossible.
 
 Inspired by Grubb's usage of "eh" to represent
-schwa and ASCII encodings of Esperanto, characters
+/a/ and ASCII encodings of Esperanto, characters
 that are usually written with diacritics are
 instead written with an "h" following them. In
-some versions, the "h" sound is instead written
+newer versions, the "h" sound is instead written
 as "j" to prevent overlap/clashes.
 -}
 
 module Kwakwala.Parsers.GrubbAsciiParser
+    -- * Newer Parsers
     ( encodeFromGrubbAscii
     , parseGrubbAscii
+    -- * Deprecated Parsers
+    , encodeFromGrubbAsciiOld
+    , parseGrubbAsciiOld
     ) where
 
 import Data.Attoparsec.Text qualified as AT
 
-import Data.Text          qualified as T
+import Data.Text qualified as T
 
 import Control.Monad
 import Control.Applicative
@@ -296,6 +300,12 @@ parseM' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b MY)
     | otherwise = return $ makeCase b M
 
+parseMonly :: AT.Parser CasedLetter
+parseMonly = do
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'm' || x == 'M')
+    ; return $ makeCase b M
+    }
+
 -----------------------
 -- Entry Point
 parseN :: AT.Parser CasedLetter
@@ -309,6 +319,12 @@ parseN' b Nothing = return $ makeCase b N
 parseN' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b NY)
     | otherwise = return $ makeCase b N
+
+parseNonly :: AT.Parser CasedLetter
+parseNonly = do
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'n' || x == 'N')
+    ; return $ makeCase b N
+    }
 
 ---------------------------------------------------------------
 -- Parsing J/Y, L, LH, and W
@@ -327,6 +343,13 @@ parseJ' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b JY)
     | otherwise = return $ makeCase b J
 
+parseJonly :: AT.Parser CasedLetter
+parseJonly = do
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'y' || x == 'Y')
+    ; return $ makeCase b J
+    }
+
+
 -----------------------
 -- Entry Point
 parseL :: AT.Parser CasedLetter
@@ -339,6 +362,18 @@ parseL' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseL' b Nothing = return $ makeCase b L
 parseL' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b LY)
+    | isH     x = AT.anyChar >> (return $ makeCase b LH)
+    | otherwise = return $ makeCase b L
+
+parseLonly :: AT.Parser CasedLetter
+parseLonly = do
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'l' || x == 'L')
+    ; AT.peekChar >>= parseLonly' b
+    }
+
+parseLonly' :: Bool -> Maybe Char -> AT.Parser CasedLetter
+parseLonly' b Nothing = return $ makeCase b L
+parseLonly' b (Just x)
     | isH     x = AT.anyChar >> (return $ makeCase b LH)
     | otherwise = return $ makeCase b L
 
@@ -355,6 +390,13 @@ parseW' b Nothing = return $ makeCase b W
 parseW' b (Just x)
     | isApost x = AT.anyChar >> (return $ makeCase b WY)
     | otherwise = return $ makeCase b W
+
+parseWonly :: AT.Parser CasedLetter
+parseWonly = do
+    { b <- isUpper <$> AT.satisfy (\x -> x == 'w' || x == 'W')
+    ; return $ makeCase b W
+    }
+
 
 -- Taken from U'mista parser, again
 parseY :: AT.Parser CasedLetter
@@ -425,13 +467,24 @@ parseU  = (AT.char 'u' $> Min  U) <|> (AT.char 'U' $> Maj  U)
 --------------------------------------------------
 -- Taken from U'mista parser
 
-parseGrubbLetter :: AT.Parser CasedLetter
-parseGrubbLetter = 
+parseGrubbLetterOld :: AT.Parser CasedLetter
+parseGrubbLetterOld = 
     AT.choice [parseA,parseE,parseI,parseO,parseU
               ,parseK,parseQ,parseG,parseX
               ,parseP,parseT,parseM,parseN,parseC
               ,parseL,parseW,parseY,parseB
               ,parseD,parseJ,parseS
+              ,parseZ,parseH
+              ]
+
+-- Disallowing glottal markers after sonorants.
+parseGrubbLetter :: AT.Parser CasedLetter
+parseGrubbLetter = 
+    AT.choice [parseA,parseE,parseI,parseO,parseU
+              ,parseK,parseQ,parseG,parseX
+              ,parseP,parseT,parseMonly,parseNonly,parseC
+              ,parseLonly,parseWonly,parseY,parseB
+              ,parseD,parseJonly,parseS
               ,parseZ,parseH
               ]
 
@@ -442,6 +495,16 @@ parseGrubbWord' :: CasedLetter -> AT.Parser [CasedLetter]
 parseGrubbWord' ltr
     | (isKwkVow' ltr) = ([caseOf ltr Y,ltr] ++) <$> many parseGrubbLetter
     | otherwise       = (ltr:)                  <$> many parseGrubbLetter
+    where caseOf (Maj _) = Maj
+          caseOf (Min _) = Min
+
+parseGrubbWordOld :: AT.Parser [CasedLetter]
+parseGrubbWordOld = parseGrubbLetterOld >>= parseGrubbWordOld'
+
+parseGrubbWordOld' :: CasedLetter -> AT.Parser [CasedLetter]
+parseGrubbWordOld' ltr
+    | (isKwkVow' ltr) = ([caseOf ltr Y,ltr] ++) <$> many parseGrubbLetterOld
+    | otherwise       = (ltr:)                  <$> many parseGrubbLetterOld
     where caseOf (Maj _) = Maj
           caseOf (Min _) = Min
 
@@ -457,7 +520,11 @@ parseGrubbChar = (Kwak <$> parseGrubbLetter) <|> parsePipe <|> (Punct <$> T.sing
 parseGrubbMain :: AT.Parser [CasedChar]
 parseGrubbMain = (map Kwak <$> parseGrubbWord) <|> ((:[]) <$> parsePipe) <|> ((:[]) <$> parsePuncts) <|> ((:[]) <$> Punct <$> T.singleton <$> AT.anyChar)
 
--- | `AT.Parser` for (most) Grubb-ASCII variants
+parseGrubbMainOld :: AT.Parser [CasedChar]
+parseGrubbMainOld = (map Kwak <$> parseGrubbWordOld) <|> ((:[]) <$> parsePipe) <|> ((:[]) <$> parsePuncts) <|> ((:[]) <$> Punct <$> T.singleton <$> AT.anyChar)
+
+
+-- | `AT.Parser` for newer Grubb-ASCII variants
 --
 -- Use this function together with functions
 -- like `AT.parseOnly` if you want error messages.
@@ -469,7 +536,7 @@ parseGrubbMain = (map Kwak <$> parseGrubbWord) <|> ((:[]) <$> parsePipe) <|> ((:
 parseGrubbAscii :: AT.Parser [CasedChar]
 parseGrubbAscii = concat <$> AT.many1 parseGrubbMain
 
--- | Direct encoder for (most) Grubb-ASCII variants.
+-- | Direct encoder for newer Grubb-ASCII variants.
 --
 -- Note that this doesn't work on variants of 
 -- Grubb-ASCII where the /j/ phoneme (usually
@@ -481,4 +548,45 @@ parseGrubbAscii = concat <$> AT.many1 parseGrubbMain
 -- with `AT.parseOnly` or other `AT.Parser` runners.
 encodeFromGrubbAscii :: T.Text -> [CasedChar]
 encodeFromGrubbAscii txt = fromRight [] $ AT.parseOnly parseGrubbAscii txt
+
+-- | `AT.Parser` for older Grubb-ASCII variants
+--
+-- This parser interprets apostrophes after 
+-- sonorants as glottalization markers. However,
+-- this is incorrect behaviour, as glottal stops
+-- following sonorants/nasals do exist. This
+-- version will incorrectly interpret such
+-- instances.
+--
+-- Use this function together with functions
+-- like `AT.parseOnly` if you want error messages.
+-- Otherwise, just use `encodeFromGrubbAscii`.
+--
+-- Note that this doesn't work on variants of 
+-- Grubb-ASCII where the /j/ phoneme (usually
+-- written as "y") is written as "j".
+parseGrubbAsciiOld :: AT.Parser [CasedChar]
+parseGrubbAsciiOld = concat <$> AT.many1 parseGrubbMainOld
+
+-- | Direct encoder for older Grubb-ASCII variants.
+--
+-- This parser interprets apostrophes after 
+-- sonorants as glottalization markers. However,
+-- this is incorrect behaviour, as glottal stops
+-- following sonorants/nasals do exist. This
+-- version will incorrectly interpret such
+-- instances.
+--
+-- Note that this doesn't work on variants of 
+-- Grubb-ASCII where the /j/ phoneme (usually
+-- written as "y") is written as "j".
+--
+-- Note that if the parser runs into any errors,
+-- this just returns an empty list. If you want
+-- error messages, use `parseGrubbAscii` together
+-- with `AT.parseOnly` or other `AT.Parser` runners.
+encodeFromGrubbAsciiOld :: T.Text -> [CasedChar]
+encodeFromGrubbAsciiOld txt = fromRight [] $ AT.parseOnly parseGrubbAsciiOld txt
+
+
 
