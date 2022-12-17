@@ -238,13 +238,13 @@ outputGeorgian'' = outputGeorgianX''
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
 -- 
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGeorgian :: [CasedChar] -> T.Text
 decodeToGeorgian = T.concat . (map $ mapChar $ mapCase outputGeorgian' outputGeorgian)
 
 -- | Georgian Output exclusively in the Mkhedruli script.
 -- 
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGeorgianAlt :: [CasedChar] -> T.Text
 decodeToGeorgianAlt = T.concat . (map $ mapChar $ mapCase outputGeorgian outputGeorgian)
 
@@ -253,7 +253,7 @@ decodeToGeorgianAlt = T.concat . (map $ mapChar $ mapCase outputGeorgian outputG
 -- where upper-case letters are much closer in appearance
 -- to their lower-case counterpart.
 -- 
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGeorgianTitle :: [CasedChar] -> T.Text
 decodeToGeorgianTitle = T.concat . (map $ mapChar $ mapCase outputGeorgian'' outputGeorgian)
 
@@ -275,14 +275,14 @@ outputGeorgian2'' = outputGeorgianX''
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
 -- 
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGeorgian2 :: [CasedChar] -> T.Text
 decodeToGeorgian2 = TL.toStrict . decodeToGeorgianLazy
 
 -- | Georgian Output exclusively in the Mkhedruli script.
 -- 
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGeorgianAlt2 :: [CasedChar] -> T.Text
 decodeToGeorgianAlt2 = TL.toStrict . decodeToGeorgianLazyAlt
@@ -292,7 +292,7 @@ decodeToGeorgianAlt2 = TL.toStrict . decodeToGeorgianLazyAlt
 -- where upper-case letters are much closer in appearance
 -- to their lower-case counterpart.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGeorgianTitle2 :: [CasedChar] -> T.Text
 decodeToGeorgianTitle2 = TL.toStrict . decodeToGeorgianLazyTitle

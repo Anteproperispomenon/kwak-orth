@@ -151,7 +151,7 @@ outputPseudoBoas' = outputPseudoBoasX'
 
 -- | Pseudo-Boas text output.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToPseudoBoas :: [CasedChar] -> T.Text
 decodeToPseudoBoas = T.concat . (map $ mapChar $ mapCase outputPseudoBoas' outputPseudoBoas)
 
@@ -167,7 +167,7 @@ outputPseudoBoas2' = outputPseudoBoasX'
 
 -- | Pseudo-Boas text output.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToPseudoBoas2 :: [CasedChar] -> T.Text
 decodeToPseudoBoas2 = TL.toStrict . decodeToPseudoBoasLazy

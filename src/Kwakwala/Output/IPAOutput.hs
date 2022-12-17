@@ -156,13 +156,13 @@ outputIpa' = outputIpaX'
 
 -- | Standard IPA text, with ties for affricates.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToIpa :: [CasedChar] -> T.Text
 decodeToIpa = T.concat . (map $ mapChar $ mapCase outputIpa outputIpa)
 
 -- | IPA text, but without ties for affricates.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToIpaAlt :: [CasedChar] -> T.Text
 decodeToIpaAlt = T.concat . (map $ mapChar $ mapCase outputIpa' outputIpa')
 
@@ -178,14 +178,14 @@ outputIpa2' = outputIpaX'
 
 -- | Standard IPA text, with ties for affricates.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToIpa2 :: [CasedChar] -> T.Text
 decodeToIpa2 = TL.toStrict . decodeToIpaLazy
 
 -- | IPA text, but without ties for affricates.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToIpaAlt2 :: [CasedChar] -> T.Text
 decodeToIpaAlt2 = TL.toStrict . decodeToIpaLazyAlt

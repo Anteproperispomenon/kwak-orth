@@ -76,3 +76,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - kwak-orth
+    - tasty
+    - tasty-golden

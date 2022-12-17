@@ -181,7 +181,7 @@ decodeToGrubbAsciiOld = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' ou
 -- glottal stops at the beginnings of words
 -- are ommited.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGrubbAscii :: [CasedChar] -> T.Text
 decodeToGrubbAscii xs = decodeToGrubbMain $ setupGlottal xs
 
@@ -190,7 +190,7 @@ decodeToGrubbAscii xs = decodeToGrubbMain $ setupGlottal xs
 -- glottal stops at the beginnings of words
 -- are __not__ omitted.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGrubbAsciiX :: [CasedChar] -> T.Text
 decodeToGrubbAsciiX xs = decodeToGrubbMain xs
 
@@ -199,7 +199,7 @@ decodeToGrubbAsciiX xs = decodeToGrubbMain xs
 -- glottal stops at the beginnings of words
 -- are ommited.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGrubbAsciiJ :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJ xs = decodeToGrubbMainJ $ setupGlottal xs
 
@@ -208,7 +208,7 @@ decodeToGrubbAsciiJ xs = decodeToGrubbMainJ $ setupGlottal xs
 -- glottal stops at the beginnings of words
 -- are __not__ omitted.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToGrubbAsciiJX :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJX xs = decodeToGrubbMain xs
 
@@ -349,7 +349,7 @@ outputGrubbAsciiJ2' x = outputGrubbAscii2' x
 -- glottal stops at the beginnings of words
 -- are ommited.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAscii2 :: [CasedChar] -> T.Text
 decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy
@@ -359,7 +359,7 @@ decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy
 -- glottal stops at the beginnings of words
 -- are __not__ omitted.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAsciiX2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiX2 = TL.toStrict . decodeToGrubbAsciiLazyX
@@ -369,7 +369,7 @@ decodeToGrubbAsciiX2 = TL.toStrict . decodeToGrubbAsciiLazyX
 -- glottal stops at the beginnings of words
 -- are ommited.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAsciiJ2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJ2 = TL.toStrict . decodeToGrubbAsciiLazyJ
@@ -379,7 +379,7 @@ decodeToGrubbAsciiJ2 = TL.toStrict . decodeToGrubbAsciiLazyJ
 -- glottal stops at the beginnings of words
 -- are __not__ omitted.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAsciiJX2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJX2 = TL.toStrict . decodeToGrubbAsciiLazyJX
