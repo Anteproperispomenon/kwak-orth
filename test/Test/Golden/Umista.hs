@@ -31,7 +31,7 @@ import TextUTF8 qualified as TU
 fixUmistaTest :: TestTree
 fixUmistaTest = 
   goldenVsString
-    "Fix Umista"
+    "Fix U'mista"
     "golden/fixedUmista.golden"
     do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
        ; let txt = decodeToUmista $ encodeFromUmista inp
@@ -41,7 +41,7 @@ fixUmistaTest =
 fixUmistaViaGrubbTest :: TestTree
 fixUmistaViaGrubbTest = 
   goldenVsStringDiff'
-    "Umista -> Grubb -> Umista"
+    "U'mista -> Grubb -> U'mista"
     "golden/fixedUmista.golden"
     do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
        ; let txt1 = decodeToGrubbAscii $ encodeFromUmista     inp
@@ -52,7 +52,7 @@ fixUmistaViaGrubbTest =
 fixUmistaViaNapaTest :: TestTree
 fixUmistaViaNapaTest = 
   goldenVsStringDiff'
-    "Umista -> NAPA  -> Umista"
+    "U'mista -> NAPA  -> U'mista"
     "golden/fixedUmista.golden"
     do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
        ; let txt1 = decodeToNapa   $ encodeFromUmista inp
@@ -63,7 +63,7 @@ fixUmistaViaNapaTest =
 fixUmistaViaBoasTest :: TestTree
 fixUmistaViaBoasTest = 
   goldenVsStringDiff'
-    "Umista -> Boas  -> Umista"
+    "U'mista -> Boas  -> U'mista"
     "golden/fixedUmista.golden"
     do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
        ; let txt1 = decodeToPseudoBoas $ encodeFromUmista inp
@@ -74,7 +74,7 @@ fixUmistaViaBoasTest =
 fixUmistaViaGeorgianTest :: TestTree
 fixUmistaViaGeorgianTest = 
   goldenVsStringDiff'
-    "Umista -> Georgian -> Umista"
+    "U'mista -> Georgian -> U'mista"
     "golden/fixedUmista.golden"
     do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
        ; let txt1 = decodeToGeorgianTitle $ encodeFromUmista   inp
@@ -86,7 +86,7 @@ fixUmistaViaGeorgianTest =
 umista2NapaTest :: TestTree
 umista2NapaTest = 
   goldenVsString
-    "Umista to NAPA"
+    "U'mista to NAPA"
     "golden/Umista2Napa.golden"
     do { inp <- TU.readFile "examples/sample1_umista.txt"
        ; let txt = decodeToNapa $ encodeFromUmista inp

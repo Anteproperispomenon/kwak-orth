@@ -3,6 +3,7 @@ import Test.Tasty (defaultMain, TestTree, testGroup)
 
 import Test.Golden.Umista qualified as Umista
 import Test.Golden.Napa   qualified as Napa
+import Test.Golden.Grubb  qualified as Grubb
 
 import TextUTF8 qualified as TU
 
@@ -26,6 +27,13 @@ tests = testGroup "Tests"
         , Napa.fixNapaViaUmistaTest
         , Napa.fixNapaViaBoasTest
         , Napa.fixNapaViaGeorgianTest
+        ]
+    , testGroup "Grubb"
+        [ Grubb.fixGrubbTest
+        , Grubb.fixGrubbViaNapaTest
+        , Grubb.fixGrubbViaUmistaTest
+        , Grubb.fixGrubbViaBoasTest
+        , Grubb.fixGrubbViaGeorgianTest
         ]
     ]
   ]

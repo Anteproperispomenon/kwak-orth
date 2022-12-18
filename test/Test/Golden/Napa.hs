@@ -37,7 +37,7 @@ fixNapaTest =
 fixNapaViaGrubbTest :: TestTree
 fixNapaViaGrubbTest = 
   goldenVsStringDiff'
-    "NAPA -> Grubb -> NAPA"
+    "NAPA -> Grubb    -> NAPA"
     "golden/fixedNapa.golden"
     do { inp <- TU.readFile "examples/sample1_napa.txt"
        ; let txt1 = decodeToGrubbAscii $ encodeFromNapa     inp
@@ -48,7 +48,7 @@ fixNapaViaGrubbTest =
 fixNapaViaUmistaTest :: TestTree
 fixNapaViaUmistaTest = 
   goldenVsStringDiff'
-    "NAPA -> Umista -> NAPA"
+    "NAPA -> U'mista  -> NAPA"
     "golden/fixedNapa.golden"
     do { inp <- TU.readFile "examples/sample1_napa.txt"
        ; let txt1 = decodeToUmista $ encodeFromNapa   inp
@@ -59,7 +59,7 @@ fixNapaViaUmistaTest =
 fixNapaViaBoasTest :: TestTree
 fixNapaViaBoasTest = 
   goldenVsStringDiff'
-    "NAPA -> Boas -> NAPA"
+    "NAPA -> Boas     -> NAPA"
     "golden/fixedNapa.golden"
     do { inp <- TU.readFile "examples/sample1_napa.txt"
        ; let txt1 = decodeToPseudoBoas $ encodeFromNapa inp
