@@ -108,6 +108,7 @@ test-suite kwak-orth-test
   other-modules:
       Test.Examples.Umista
       Test.Golden.Helpers
+      Test.Golden.Napa
       Test.Golden.Umista
       Paths_kwak_orth
   hs-source-dirs:

@@ -2,6 +2,7 @@
 import Test.Tasty (defaultMain, TestTree, testGroup)
 
 import Test.Golden.Umista qualified as Umista
+import Test.Golden.Napa   qualified as Napa
 
 import TextUTF8 qualified as TU
 
@@ -18,6 +19,13 @@ tests = testGroup "Tests"
         , Umista.fixUmistaViaBoasTest
         , Umista.fixUmistaViaGeorgianTest
         , Umista.umista2NapaTest
+        ]
+    , testGroup "NAPA"
+        [ Napa.fixNapaTest
+        , Napa.fixNapaViaGrubbTest
+        , Napa.fixNapaViaUmistaTest
+        , Napa.fixNapaViaBoasTest
+        , Napa.fixNapaViaGeorgianTest
         ]
     ]
   ]
