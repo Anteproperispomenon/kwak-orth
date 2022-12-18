@@ -14,6 +14,9 @@ tests = testGroup "Tests"
     [ testGroup "U'mista"
         [ Umista.fixUmistaTest
         , Umista.fixUmistaViaGrubbTest
+        , Umista.fixUmistaViaNapaTest
+        , Umista.fixUmistaViaBoasTest
+        , Umista.fixUmistaViaGeorgianTest
         , Umista.umista2NapaTest
         ]
     ]

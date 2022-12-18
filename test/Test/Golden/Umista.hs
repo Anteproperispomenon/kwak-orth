@@ -1,6 +1,9 @@
 module Test.Golden.Umista 
   ( fixUmistaTest
   , fixUmistaViaGrubbTest
+  , fixUmistaViaNapaTest
+  , fixUmistaViaBoasTest
+  , fixUmistaViaGeorgianTest
   , umista2NapaTest
   ) where
 
@@ -8,6 +11,7 @@ module Test.Golden.Umista
 
 import Test.Tasty (TestTree, TestName, testGroup)
 import Test.Tasty.Golden
+import Test.Golden.Helpers
 
 import Data.ByteString.Lazy qualified as BL
 
@@ -45,6 +49,40 @@ fixUmistaViaGrubbTest =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
+fixUmistaViaNapaTest :: TestTree
+fixUmistaViaNapaTest = 
+  goldenVsStringDiff'
+    "Umista -> NAPA  -> Umista"
+    "golden/fixedUmista.golden"
+    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+       ; let txt1 = decodeToNapa   $ encodeFromUmista inp
+       ; let txt2 = decodeToUmista $ encodeFromNapa   txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
+fixUmistaViaBoasTest :: TestTree
+fixUmistaViaBoasTest = 
+  goldenVsStringDiff'
+    "Umista -> Boas  -> Umista"
+    "golden/fixedUmista.golden"
+    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+       ; let txt1 = decodeToPseudoBoas $ encodeFromUmista inp
+       ; let txt2 = decodeToUmista     $ encodeFromBoas   txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
+fixUmistaViaGeorgianTest :: TestTree
+fixUmistaViaGeorgianTest = 
+  goldenVsStringDiff'
+    "Umista -> Georgian -> Umista"
+    "golden/fixedUmista.golden"
+    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+       ; let txt1 = decodeToGeorgianTitle $ encodeFromUmista   inp
+       ; let txt2 = decodeToUmista        $ encodeFromGeorgian txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
+
 umista2NapaTest :: TestTree
 umista2NapaTest = 
   goldenVsString
@@ -54,9 +92,3 @@ umista2NapaTest =
        ; let txt = decodeToNapa $ encodeFromUmista inp
        ; return $ BL.fromStrict $ T.encodeUtf8 txt
        }
-
--- | Drop-in replacement for `goldenVsString`
--- but using diff.
-goldenVsStringDiff' :: TestName -> FilePath -> IO BL.ByteString -> TestTree
-goldenVsStringDiff' tstN fp bs
-  = goldenVsStringDiff tstN (\ref new -> ["diff", "-u", ref, new]) fp bs
