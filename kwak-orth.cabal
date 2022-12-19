@@ -107,10 +107,12 @@ test-suite kwak-orth-test
   main-is: Spec.hs
   other-modules:
       Test.Examples.Umista
+      Test.Golden.Casing.Umista
       Test.Golden.Grubb
       Test.Golden.Helpers
       Test.Golden.Napa
       Test.Golden.Umista
+      Test.Helpers
       Paths_kwak_orth
   hs-source-dirs:
       test

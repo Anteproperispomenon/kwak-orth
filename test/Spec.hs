@@ -5,6 +5,8 @@ import Test.Golden.Umista qualified as Umista
 import Test.Golden.Napa   qualified as Napa
 import Test.Golden.Grubb  qualified as Grubb
 
+import Test.Golden.Casing.Umista qualified as UmistaCase
+
 import TextUTF8 qualified as TU
 
 main :: IO ()
@@ -14,6 +16,7 @@ tests :: TestTree
 tests = testGroup "Tests"
   [ testGroup "Golden Tests"
     [ testGroup "U'mista"
+      [ testGroup "Parsing" 
         [ Umista.fixUmistaTest
         , Umista.fixUmistaViaGrubbTest
         , Umista.fixUmistaViaNapaTest
@@ -21,6 +24,12 @@ tests = testGroup "Tests"
         , Umista.fixUmistaViaGeorgianTest
         , Umista.umista2NapaTest
         ]
+      , testGroup "Casing"
+        [ UmistaCase.umistaAllLower
+        , UmistaCase.umistaAllUpper
+        , UmistaCase.umistaCaseCompare
+        ]
+      ]
     , testGroup "NAPA"
         [ Napa.fixNapaTest
         , Napa.fixNapaViaGrubbTest
