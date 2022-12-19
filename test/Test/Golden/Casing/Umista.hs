@@ -34,19 +34,19 @@ umistaAllLower =
 
 umistaAllUpper :: TestTree
 umistaAllUpper = 
-  goldenVsStringDiff'
+  goldenVsString
     "Make Umista Uppercase"
     "golden/umistaUpper.golden"
     do { inp <- TU.readFile "golden/umistaLower.golden"
        ; let chr1 = encodeFromUmista inp -- convert to CasedChars
-       ; let chr2 = map toMaj' chr1      -- make lower case
+       ; let chr2 = map toMaj' chr1      -- make upper case
        ; let txt2 = decodeToUmista chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
 umistaCaseCompare :: TestTree
 umistaCaseCompare = 
-  goldenVsStringDiff'
+  goldenVsString
     "Lowercase -> Uppercase -> Lowercase"
     "golden/umistaLower.golden"
     do { inp <- TU.readFile "golden/umistaUpper.golden"
