@@ -2,6 +2,9 @@ module Test.Golden.Casing.Umista
   ( umistaAllLower
   , umistaAllUpper
   , umistaCaseCompare
+  , checkUmistaViaGrubb
+  , checkUmistaViaBoas
+  , checkUmistaViaGeorgian
   ) where
 
 import Test.Tasty (TestTree, TestName, testGroup)
@@ -55,4 +58,38 @@ umistaCaseCompare =
        ; let txt2 = decodeToUmista chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+
+checkUmistaViaGrubb :: TestTree
+checkUmistaViaGrubb = 
+  goldenVsString
+    "UC: U'mista -> Grubb -> U'mista"
+    "golden/umistaUpper.golden"
+    do { inp <- TU.readFile "golden/umistaUpper.golden"
+       ; let txt1 = decodeToGrubbAscii $ encodeFromUmista     inp
+       ; let txt2 = decodeToUmista     $ encodeFromGrubbAscii txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
+checkUmistaViaBoas :: TestTree
+checkUmistaViaBoas = 
+  goldenVsString
+    "UC: U'mista -> Boas  -> U'mista"
+    "golden/umistaUpper.golden"
+    do { inp <- TU.readFile "golden/umistaUpper.golden"
+       ; let txt1 = decodeToPseudoBoas $ encodeFromUmista inp
+       ; let txt2 = decodeToUmista     $ encodeFromBoas   txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
+checkUmistaViaGeorgian :: TestTree
+checkUmistaViaGeorgian = 
+  goldenVsString
+    "UC: U'mista -> Georgian -> U'mista"
+    "golden/umistaUpper.golden"
+    do { inp <- TU.readFile "golden/umistaUpper.golden"
+       ; let txt1 = decodeToGeorgianTitle $ encodeFromUmista   inp
+       ; let txt2 = decodeToUmista        $ encodeFromGeorgian txt1
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt2
+       }
+
 

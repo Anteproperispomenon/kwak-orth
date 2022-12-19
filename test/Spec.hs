@@ -28,6 +28,9 @@ tests = testGroup "Tests"
         [ UmistaCase.umistaAllLower
         , UmistaCase.umistaAllUpper
         , UmistaCase.umistaCaseCompare
+        , UmistaCase.checkUmistaViaGrubb
+        , UmistaCase.checkUmistaViaBoas
+        , UmistaCase.checkUmistaViaGeorgian
         ]
       ]
     , testGroup "NAPA"
