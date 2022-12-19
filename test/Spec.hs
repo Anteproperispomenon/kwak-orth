@@ -6,6 +6,7 @@ import Test.Golden.Napa   qualified as Napa
 import Test.Golden.Grubb  qualified as Grubb
 
 import Test.Golden.Casing.Umista qualified as UmistaCase
+import Test.Golden.Casing.Napa   qualified as NapaCase
 
 import TextUTF8 qualified as TU
 
@@ -34,11 +35,22 @@ tests = testGroup "Tests"
         ]
       ]
     , testGroup "NAPA"
-        [ Napa.fixNapaTest
-        , Napa.fixNapaViaGrubbTest
-        , Napa.fixNapaViaUmistaTest
-        , Napa.fixNapaViaBoasTest
-        , Napa.fixNapaViaGeorgianTest
+        [ testGroup "Parsing"
+          [ Napa.fixNapaTest
+          , Napa.fixNapaViaGrubbTest
+          , Napa.fixNapaViaUmistaTest
+          , Napa.fixNapaViaBoasTest
+          , Napa.fixNapaViaGeorgianTest
+          ]
+        , testGroup "Casing"
+          [ NapaCase.napaAllLower
+          , NapaCase.napaAllUpper
+          , NapaCase.napaCaseCompare
+          , NapaCase.checkNapaViaUmista
+          , NapaCase.checkNapaViaGrubb
+          , NapaCase.checkNapaViaBoas
+          , NapaCase.checkNapaViaGeorgian
+          ]
         ]
     , testGroup "Grubb"
         [ Grubb.fixGrubbTest
