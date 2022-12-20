@@ -54,6 +54,7 @@ isApost '\'' = True
 isApost '`'  = True
 isApost '̕'  = True
 isApost '\x313' = True
+isApost '\x2bc' = True
 isApost _ = False
 
 -- ʷᵂ

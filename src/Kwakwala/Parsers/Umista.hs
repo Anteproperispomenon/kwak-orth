@@ -59,6 +59,7 @@ isApost '̕'  = True
 isApost '\x313' = True
 -- isApost '\x315' = True
 isApost '\x2019' = True
+isApost '\x2bc' = True
 isApost _ = False
 
 -- For checking after an m/n/etc...

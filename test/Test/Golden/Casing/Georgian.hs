@@ -49,7 +49,7 @@ georgianAllUpper =
 
 georgianCaseCompare :: TestTree
 georgianCaseCompare = 
-  goldenVsString
+  goldenVsStringDiff'
     "Mkhedruli -> Mtavruli -> Mkhedruli"
     "golden/georgianLower.golden"
     do { inp <- TU.readFile "golden/georgianUpper.golden"
@@ -91,5 +91,3 @@ checkGeorgianViaUmista =
        ; let txt2 = decodeToGeorgianTitle $ encodeFromUmista txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
-
-
