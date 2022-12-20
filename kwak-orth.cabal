@@ -107,9 +107,11 @@ test-suite kwak-orth-test
   main-is: Spec.hs
   other-modules:
       Test.Examples.Umista
+      Test.Golden.Casing.Georgian
       Test.Golden.Casing.Grubb
       Test.Golden.Casing.Napa
       Test.Golden.Casing.Umista
+      Test.Golden.Georgian
       Test.Golden.Grubb
       Test.Golden.Helpers
       Test.Golden.Napa

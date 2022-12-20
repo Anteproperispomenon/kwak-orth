@@ -1,13 +1,15 @@
 
 import Test.Tasty (defaultMain, TestTree, testGroup)
 
-import Test.Golden.Umista qualified as Umista
-import Test.Golden.Napa   qualified as Napa
-import Test.Golden.Grubb  qualified as Grubb
+import Test.Golden.Umista   qualified as Umista
+import Test.Golden.Napa     qualified as Napa
+import Test.Golden.Grubb    qualified as Grubb
+import Test.Golden.Georgian qualified as Georgian
 
-import Test.Golden.Casing.Umista qualified as UmistaCase
-import Test.Golden.Casing.Napa   qualified as NapaCase
-import Test.Golden.Casing.Grubb  qualified as GrubbCase
+import Test.Golden.Casing.Umista   qualified as UmistaCase
+import Test.Golden.Casing.Napa     qualified as NapaCase
+import Test.Golden.Casing.Grubb    qualified as GrubbCase
+import Test.Golden.Casing.Georgian qualified as GeorgianCase
 
 import TextUTF8 qualified as TU
 
@@ -69,6 +71,23 @@ tests = testGroup "Tests"
           , GrubbCase.checkGrubbViaBoas
           , GrubbCase.checkGrubbViaGeorgian
           ]
+        ]
+    , testGroup "Georgian"
+        [ testGroup "Parsing"
+          [ Georgian.fixGeorgianTest
+          , Georgian.fixGeorgianViaNapaTest
+          , Georgian.fixGeorgianViaUmistaTest
+          , Georgian.fixGeorgianViaBoasTest
+          , Georgian.fixGeorgianViaGrubbTest
+          ]
+        , testGroup "Casing"
+          [ GeorgianCase.georgianAllLower
+          , GeorgianCase.georgianAllUpper
+          , GeorgianCase.georgianCaseCompare
+          , GeorgianCase.checkGeorgianViaUmista
+          , GeorgianCase.checkGeorgianViaBoas
+          , GeorgianCase.checkGeorgianViaGrubb
+          ] 
         ]
     ]
   ]
