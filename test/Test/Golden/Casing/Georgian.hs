@@ -49,7 +49,7 @@ georgianAllUpper =
 
 georgianCaseCompare :: TestTree
 georgianCaseCompare = 
-  goldenVsStringDiff'
+  goldenVsString
     "Mkhedruli -> Mtavruli -> Mkhedruli"
     "golden/georgianLower.golden"
     do { inp <- TU.readFile "golden/georgianUpper.golden"
@@ -59,13 +59,19 @@ georgianCaseCompare =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
+--------------------------------------------------------
+-- Note: can't compare georgianUpper.golden directly, --
+-- since other orthographies can't handle upper-case  --
+-- glottal stops at the the end of a word.            --
+--------------------------------------------------------
+
 checkGeorgianViaGrubb :: TestTree
 checkGeorgianViaGrubb = 
   goldenVsString
     "UC: Georgian -> Grubb -> Georgian"
-    "golden/georgianUpper.golden"
+    "golden/georgianUpperX.golden"
     do { inp <- TU.readFile "golden/georgianUpper.golden"
-       ; let txt1 = decodeToGrubbAscii    $ encodeFromGeorgian     inp
+       ; let txt1 = decodeToGrubbAscii    $ encodeFromGeorgian   inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromGrubbAscii txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
@@ -74,7 +80,7 @@ checkGeorgianViaBoas :: TestTree
 checkGeorgianViaBoas = 
   goldenVsString
     "UC: Georgian -> Boas  -> Georgian"
-    "golden/georgianUpper.golden"
+    "golden/georgianUpperX.golden"
     do { inp <- TU.readFile "golden/georgianUpper.golden"
        ; let txt1 = decodeToPseudoBoas    $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromBoas   txt1
@@ -85,7 +91,7 @@ checkGeorgianViaUmista :: TestTree
 checkGeorgianViaUmista = 
   goldenVsString
     "UC: Georgian -> U'mista -> Georgian"
-    "golden/georgianUpper.golden"
+    "golden/georgianUpperX.golden"
     do { inp <- TU.readFile "golden/georgianUpper.golden"
        ; let txt1 = decodeToUmista        $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromUmista txt1
