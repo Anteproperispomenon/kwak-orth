@@ -7,6 +7,7 @@ import Test.Golden.Grubb  qualified as Grubb
 
 import Test.Golden.Casing.Umista qualified as UmistaCase
 import Test.Golden.Casing.Napa   qualified as NapaCase
+import Test.Golden.Casing.Grubb  qualified as GrubbCase
 
 import TextUTF8 qualified as TU
 
@@ -53,11 +54,21 @@ tests = testGroup "Tests"
           ]
         ]
     , testGroup "Grubb"
-        [ Grubb.fixGrubbTest
-        , Grubb.fixGrubbViaNapaTest
-        , Grubb.fixGrubbViaUmistaTest
-        , Grubb.fixGrubbViaBoasTest
-        , Grubb.fixGrubbViaGeorgianTest
+        [ testGroup "Parsing"
+          [ Grubb.fixGrubbTest
+          , Grubb.fixGrubbViaNapaTest
+          , Grubb.fixGrubbViaUmistaTest
+          , Grubb.fixGrubbViaBoasTest
+          , Grubb.fixGrubbViaGeorgianTest
+          ]
+        , testGroup "Casing"
+          [ GrubbCase.grubbAllLower
+          , GrubbCase.grubbAllUpper
+          , GrubbCase.grubbCaseCompare
+          , GrubbCase.checkGrubbViaUmista
+          , GrubbCase.checkGrubbViaBoas
+          , GrubbCase.checkGrubbViaGeorgian
+          ]
         ]
     ]
   ]
