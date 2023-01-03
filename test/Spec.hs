@@ -20,14 +20,7 @@ tests :: TestTree
 tests = testGroup "Tests"
   [ testGroup "Golden Tests"
     [ testGroup "U'mista"
-      [ testGroup "Parsing" 
-        [ Umista.fixUmistaTest
-        , Umista.fixUmistaViaGrubbTest
-        , Umista.fixUmistaViaNapaTest
-        , Umista.fixUmistaViaBoasTest
-        , Umista.fixUmistaViaGeorgianTest
-        , Umista.umista2NapaTest
-        ]
+      [ Umista.fixUmistaTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       , testGroup "Casing"
         [ UmistaCase.umistaAllLower
         , UmistaCase.umistaAllUpper

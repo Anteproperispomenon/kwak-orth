@@ -1,5 +1,6 @@
 module Test.Golden.Umista 
-  ( fixUmistaTest
+  ( fixUmistaTests
+  , fixUmistaTest
   , fixUmistaViaGrubbTest
   , fixUmistaViaNapaTest
   , fixUmistaViaBoasTest
@@ -26,61 +27,74 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
+fixUmistaTests :: TestName -> String -> String -> TestTree
+fixUmistaTests tstNam inFile outExt = testGroup ("U'mista Tests: " ++ tstNam)
+  [ fixUmistaTest inFile outExt
+  , fixUmistaViaGrubbTest outExt
+  , fixUmistaViaNapaTest outExt
+  , fixUmistaViaBoasTest outExt
+  , fixUmistaViaGeorgianTest outExt
+  ]
 
+-- "examples/sample1_umista_raw.txt"
 
-fixUmistaTest :: TestTree
-fixUmistaTest = 
+fixUmistaTest :: String -> String -> TestTree
+fixUmistaTest inFile outExt = 
   goldenVsString
     "Fix U'mista"
-    "golden/fixedUmista.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    ("golden/fixedUmista" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt = decodeToUmista $ encodeFromUmista inp
        ; return $ BL.fromStrict $ T.encodeUtf8 txt
        }
 
-fixUmistaViaGrubbTest :: TestTree
-fixUmistaViaGrubbTest = 
+fixUmistaViaGrubbTest :: String -> TestTree
+fixUmistaViaGrubbTest outExt = 
   goldenVsStringDiff'
     "U'mista -> Grubb -> U'mista"
-    "golden/fixedUmista.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToGrubbAscii $ encodeFromUmista     inp
        ; let txt2 = decodeToUmista     $ encodeFromGrubbAscii txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedUmista" ++ "_" ++ outExt ++ ".golden"
 
-fixUmistaViaNapaTest :: TestTree
-fixUmistaViaNapaTest = 
+fixUmistaViaNapaTest :: String -> TestTree
+fixUmistaViaNapaTest outExt = 
   goldenVsStringDiff'
     "U'mista -> NAPA  -> U'mista"
-    "golden/fixedUmista.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToNapa   $ encodeFromUmista inp
        ; let txt2 = decodeToUmista $ encodeFromNapa   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedUmista" ++ "_" ++ outExt ++ ".golden"
 
-fixUmistaViaBoasTest :: TestTree
-fixUmistaViaBoasTest = 
+fixUmistaViaBoasTest :: String -> TestTree
+fixUmistaViaBoasTest outExt = 
   goldenVsStringDiff'
     "U'mista -> Boas  -> U'mista"
-    "golden/fixedUmista.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToPseudoBoas $ encodeFromUmista inp
        ; let txt2 = decodeToUmista     $ encodeFromBoas   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedUmista" ++ "_" ++ outExt ++ ".golden"
 
-fixUmistaViaGeorgianTest :: TestTree
-fixUmistaViaGeorgianTest = 
+fixUmistaViaGeorgianTest :: String -> TestTree
+fixUmistaViaGeorgianTest outExt = 
   goldenVsStringDiff'
     "U'mista -> Georgian -> U'mista"
-    "golden/fixedUmista.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToGeorgianTitle $ encodeFromUmista   inp
        ; let txt2 = decodeToUmista        $ encodeFromGeorgian txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedUmista" ++ "_" ++ outExt ++ ".golden"
 
 
 umista2NapaTest :: TestTree
