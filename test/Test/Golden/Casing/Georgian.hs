@@ -1,5 +1,6 @@
 module Test.Golden.Casing.Georgian
-  ( georgianAllLower
+  ( georgianCaseTests
+  , georgianAllLower
   , georgianAllUpper
   , georgianCaseCompare
   , checkGeorgianViaGrubb
@@ -23,36 +24,46 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
-georgianAllLower :: TestTree
-georgianAllLower = 
+georgianCaseTests :: TestName -> String -> String -> TestTree
+georgianCaseTests tstNam inFile outExt = testGroup ("Grubb Case Tests: " ++ tstNam)
+  [ georgianAllLower inFile outExt
+  , georgianAllUpper outExt
+  , georgianCaseCompare outExt
+  , checkGeorgianViaGrubb outExt
+  , checkGeorgianViaUmista outExt
+  , checkGeorgianViaBoas outExt
+  ]
+
+georgianAllLower :: String -> String -> TestTree
+georgianAllLower inFile outExt = 
   goldenVsString
     "Make Georgian Lowercase"
-    "golden/georgianLower.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    ("golden/georgianLower" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let chr1 = encodeFromUmista inp -- convert to CasedChars
        ; let chr2 = map toMin' chr1      -- make lower case
        ; let txt2 = decodeToGeorgianTitle chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-georgianAllUpper :: TestTree
-georgianAllUpper = 
+georgianAllUpper :: String -> TestTree
+georgianAllUpper outExt = 
   goldenVsString
     "Make Georgian Uppercase"
-    "golden/georgianUpper.golden"
-    do { inp <- TU.readFile "golden/georgianLower.golden"
+    ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/georgianLower" ++ "_" ++ outExt ++ ".golden")
        ; let chr1 = encodeFromGeorgian inp -- convert to CasedChars
        ; let chr2 = map toMaj' chr1        -- make upper case
        ; let txt2 = decodeToGeorgianTitle chr2 -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-georgianCaseCompare :: TestTree
-georgianCaseCompare = 
+georgianCaseCompare :: String -> TestTree
+georgianCaseCompare outExt = 
   goldenVsString
     "Mkhedruli -> Mtavruli -> Mkhedruli"
-    "golden/georgianLower.golden"
-    do { inp <- TU.readFile "golden/georgianUpper.golden"
+    ("golden/georgianLower" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
        ; let chr1 = encodeFromGeorgian inp -- convert to CasedChars
        ; let chr2 = map toMin' chr1        -- make lower case
        ; let txt2 = decodeToGeorgianTitle chr2 -- decode to text
@@ -65,35 +76,39 @@ georgianCaseCompare =
 -- glottal stops at the the end of a word.            --
 --------------------------------------------------------
 
-checkGeorgianViaGrubb :: TestTree
-checkGeorgianViaGrubb = 
+checkGeorgianViaGrubb :: String -> TestTree
+checkGeorgianViaGrubb outExt = 
   goldenVsString
     "UC: Georgian -> Grubb -> Georgian"
-    "golden/georgianUpperX.golden"
-    do { inp <- TU.readFile "golden/georgianUpper.golden"
+    ("golden/georgianUpperX" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
        ; let txt1 = decodeToGrubbAscii    $ encodeFromGeorgian   inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromGrubbAscii txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-checkGeorgianViaBoas :: TestTree
-checkGeorgianViaBoas = 
+checkGeorgianViaBoas :: String -> TestTree
+checkGeorgianViaBoas outExt = 
   goldenVsString
     "UC: Georgian -> Boas  -> Georgian"
-    "golden/georgianUpperX.golden"
-    do { inp <- TU.readFile "golden/georgianUpper.golden"
+    ("golden/georgianUpperX" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
        ; let txt1 = decodeToPseudoBoas    $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromBoas   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-checkGeorgianViaUmista :: TestTree
-checkGeorgianViaUmista = 
+checkGeorgianViaUmista :: String -> TestTree
+checkGeorgianViaUmista outExt = 
   goldenVsString
     "UC: Georgian -> U'mista -> Georgian"
-    "golden/georgianUpperX.golden"
-    do { inp <- TU.readFile "golden/georgianUpper.golden"
+    ("golden/georgianUpperX" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
        ; let txt1 = decodeToUmista        $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromUmista txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+
+-- ("golden/georgianLower" ++ "_" ++ outExt ++ ".golden")
+-- ("golden/georgianUpper" ++ "_" ++ outExt ++ ".golden")
+-- ("golden/georgianUpperX" ++ "_" ++ outExt ++ ".golden")
