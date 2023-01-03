@@ -21,7 +21,6 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
-
 fixGeorgianTests :: TestName -> String -> String -> TestTree
 fixGeorgianTests tstNam inFile outExt = testGroup ("Georgian Tests: " ++ tstNam)
   [ fixGeorgianTest inFile outExt
@@ -65,7 +64,6 @@ fixGeorgianViaUmistaTest outExt =
        }
   where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
 
-
 fixGeorgianViaBoasTest :: String -> TestTree
 fixGeorgianViaBoasTest outExt = 
   goldenVsStringDiff'
@@ -89,4 +87,3 @@ fixGeorgianViaNapaTest outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
-

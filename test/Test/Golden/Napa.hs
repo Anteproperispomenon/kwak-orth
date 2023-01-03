@@ -17,9 +17,6 @@ import Data.ByteString.Lazy qualified as BL
 import Data.Text          qualified as T
 import Data.Text.Encoding qualified as T
 
--- import Data.Text.Lazy          qualified as TL
--- import Data.Text.Lazy.Encoding qualified as TL
-
 import Kwakwala.Output
 import Kwakwala.Parsers
 
@@ -91,5 +88,3 @@ fixNapaViaGeorgianTest outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/fixedNapa" ++ "_" ++ outExt ++ ".golden"
-
-

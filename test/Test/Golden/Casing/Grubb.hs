@@ -35,7 +35,6 @@ grubbCaseTests tstNam inFile outExt = testGroup ("Grubb Case Tests: " ++ tstNam)
   , checkGrubbViaGeorgian outExt
   ]
 
-
 grubbAllLower :: String -> String -> TestTree
 grubbAllLower inFile outExt = 
   goldenVsString
@@ -107,5 +106,3 @@ checkGrubbViaGeorgian outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/grubbUpper" ++ "_" ++ outExt ++ ".golden"
-
-

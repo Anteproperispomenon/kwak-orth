@@ -34,8 +34,6 @@ umistaCaseTests tstNam inFile outExt = testGroup ("U'mista Case Tests: " ++ tstN
   , checkUmistaViaGeorgian outExt
   ]
 
--- "examples/sample1_umista_raw.txt"
-
 umistaAllLower :: String -> String -> TestTree
 umistaAllLower inFile outExt = 
   goldenVsString
@@ -107,5 +105,3 @@ checkUmistaViaGeorgian outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/umistaUpper" ++ "_" ++ outExt ++ ".golden"
-
-

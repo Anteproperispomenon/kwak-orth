@@ -37,7 +37,6 @@ napaCaseTests tstNam inFile outExt = testGroup ("NAPA Case Tests: " ++ tstNam)
   , checkNapaViaGeorgian outExt
   ]
 
-
 napaAllLower :: String -> String -> TestTree
 napaAllLower inFile outExt = 
   goldenVsString
@@ -121,4 +120,3 @@ checkNapaViaGeorgian outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/napaUpper" ++ "_" ++ outExt ++ ".golden"
-
