@@ -16,6 +16,7 @@ import TextUTF8 qualified as TU
 main :: IO ()
 main = TU.fixLocale >> defaultMain tests
 
+{-
 testsOld :: TestTree
 testsOld = testGroup "Tests"
   [ testGroup "Golden Tests"
@@ -66,6 +67,7 @@ testsOld = testGroup "Tests"
         ]
     ]
   ]
+-}
 
 tests :: TestTree
 tests = testGroup "Tests"
@@ -77,14 +79,7 @@ tests = testGroup "Tests"
       , Georgian.fixGeorgianTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       ]
     , testGroup "Casing"
-      [ testGroup "Umista"
-        [ UmistaCase.umistaAllLower
-        , UmistaCase.umistaAllUpper
-        , UmistaCase.umistaCaseCompare
-        , UmistaCase.checkUmistaViaGrubb
-        , UmistaCase.checkUmistaViaBoas
-        , UmistaCase.checkUmistaViaGeorgian
-        ]
+      [ UmistaCase.umistaCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       , testGroup "Napa"
         [ NapaCase.napaAllLower
         , NapaCase.napaAllUpper
