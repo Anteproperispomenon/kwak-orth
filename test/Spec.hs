@@ -81,14 +81,7 @@ tests = testGroup "Tests"
     , testGroup "Casing"
       [ UmistaCase.umistaCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       , NapaCase.napaCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
-      , testGroup "Grubb"
-        [ GrubbCase.grubbAllLower
-        , GrubbCase.grubbAllUpper
-        , GrubbCase.grubbCaseCompare
-        , GrubbCase.checkGrubbViaUmista
-        , GrubbCase.checkGrubbViaBoas
-        , GrubbCase.checkGrubbViaGeorgian
-        ]
+      , GrubbCase.grubbCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       , testGroup "Georgian"
         [ GeorgianCase.georgianAllLower
         , GeorgianCase.georgianAllUpper

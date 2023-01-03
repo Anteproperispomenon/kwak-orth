@@ -1,5 +1,6 @@
 module Test.Golden.Casing.Grubb
-  ( grubbAllLower
+  ( grubbCaseTests
+  , grubbAllLower
   , grubbAllUpper
   , grubbCaseCompare
   , checkGrubbViaUmista
@@ -23,73 +24,88 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
-grubbAllLower :: TestTree
-grubbAllLower = 
+
+grubbCaseTests :: TestName -> String -> String -> TestTree
+grubbCaseTests tstNam inFile outExt = testGroup ("Grubb Case Tests: " ++ tstNam)
+  [ grubbAllLower inFile outExt
+  , grubbAllUpper outExt
+  , grubbCaseCompare outExt
+  , checkGrubbViaUmista outExt
+  , checkGrubbViaBoas outExt
+  , checkGrubbViaGeorgian outExt
+  ]
+
+
+grubbAllLower :: String -> String -> TestTree
+grubbAllLower inFile outExt = 
   goldenVsString
     "Make Grubb Lowercase"
-    "golden/grubbLower.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    ("golden/grubbLower" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let chr1 = encodeFromUmista inp -- convert to CasedChars
        ; let chr2 = map toMin' chr1      -- make lower case
        ; let txt2 = decodeToGrubbAscii chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-grubbAllUpper :: TestTree
-grubbAllUpper = 
+grubbAllUpper :: String -> TestTree
+grubbAllUpper outExt = 
   goldenVsString
     "Make Grubb Uppercase"
-    "golden/grubbUpper.golden"
-    do { inp <- TU.readFile "golden/grubbLower.golden"
+    ("golden/grubbUpper" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/grubbLower" ++ "_" ++ outExt ++ ".golden")
        ; let chr1 = encodeFromGrubbAscii inp -- convert to CasedChars
        ; let chr2 = map toMaj' chr1      -- make upper case
        ; let txt2 = decodeToGrubbAscii chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-grubbCaseCompare :: TestTree
-grubbCaseCompare = 
+grubbCaseCompare :: String -> TestTree
+grubbCaseCompare outExt = 
   goldenVsString
     "Lowercase -> Uppercase -> Lowercase"
-    "golden/grubbLower.golden"
-    do { inp <- TU.readFile "golden/grubbUpper.golden"
+    ("golden/grubbLower" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile ("golden/grubbUpper" ++ "_" ++ outExt ++ ".golden")
        ; let chr1 = encodeFromGrubbAscii inp -- convert to CasedChars
        ; let chr2 = map toMin' chr1      -- make lower case
        ; let txt2 = decodeToGrubbAscii chr2  -- decode to text
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-checkGrubbViaUmista :: TestTree
-checkGrubbViaUmista = 
+checkGrubbViaUmista :: String -> TestTree
+checkGrubbViaUmista outExt = 
   goldenVsString
     "UC: Grubb -> U'mista  -> Grubb"
-    "golden/grubbUpper.golden"
-    do { inp <- TU.readFile "golden/grubbUpper.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToUmista     $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromUmista     txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/grubbUpper" ++ "_" ++ outExt ++ ".golden"
 
-checkGrubbViaBoas :: TestTree
-checkGrubbViaBoas = 
+checkGrubbViaBoas :: String -> TestTree
+checkGrubbViaBoas outExt = 
   goldenVsString
     "UC: Grubb -> Boas     -> Grubb"
-    "golden/grubbUpper.golden"
-    do { inp <- TU.readFile "golden/grubbUpper.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToPseudoBoas $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromBoas   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/grubbUpper" ++ "_" ++ outExt ++ ".golden"
 
-checkGrubbViaGeorgian :: TestTree
-checkGrubbViaGeorgian = 
+checkGrubbViaGeorgian :: String -> TestTree
+checkGrubbViaGeorgian outExt = 
   goldenVsString
     "UC: Grubb -> Georgian -> Grubb"
-    "golden/grubbUpper.golden"
-    do { inp <- TU.readFile "golden/grubbUpper.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToGeorgianTitle $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii    $ encodeFromGeorgian   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/grubbUpper" ++ "_" ++ outExt ++ ".golden"
 
 
