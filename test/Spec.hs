@@ -16,8 +16,8 @@ import TextUTF8 qualified as TU
 main :: IO ()
 main = TU.fixLocale >> defaultMain tests
 
-tests :: TestTree
-tests = testGroup "Tests"
+testsOld :: TestTree
+testsOld = testGroup "Tests"
   [ testGroup "Golden Tests"
     [ testGroup "U'mista"
       [ Umista.fixUmistaTests "Original File" "examples/sample1_umista_raw.txt" "orig"
@@ -64,5 +64,52 @@ tests = testGroup "Tests"
           , GeorgianCase.checkGeorgianViaGrubb
           ] 
         ]
+    ]
+  ]
+
+tests :: TestTree
+tests = testGroup "Tests"
+  [ testGroup "Golden Tests"
+    [ testGroup "Parsing/Idempotence"
+      [ Umista.fixUmistaTests "Original File" "examples/sample1_umista_raw.txt" "orig"
+      , Napa.fixNapaTests "Original File" "examples/sample1_napa.txt" "orig"
+      , Grubb.fixGrubbTests "Original File" "examples/sample1_grubb.txt" "orig"
+      , Georgian.fixGeorgianTests "Original File" "examples/sample1_umista_raw.txt" "orig"
+      ]
+    , testGroup "Casing"
+      [ testGroup "Umista"
+        [ UmistaCase.umistaAllLower
+        , UmistaCase.umistaAllUpper
+        , UmistaCase.umistaCaseCompare
+        , UmistaCase.checkUmistaViaGrubb
+        , UmistaCase.checkUmistaViaBoas
+        , UmistaCase.checkUmistaViaGeorgian
+        ]
+      , testGroup "Napa"
+        [ NapaCase.napaAllLower
+        , NapaCase.napaAllUpper
+        , NapaCase.napaCaseCompare
+        , NapaCase.checkNapaViaUmista
+        , NapaCase.checkNapaViaGrubb
+        , NapaCase.checkNapaViaBoas
+        , NapaCase.checkNapaViaGeorgian
+        ]
+      , testGroup "Grubb"
+        [ GrubbCase.grubbAllLower
+        , GrubbCase.grubbAllUpper
+        , GrubbCase.grubbCaseCompare
+        , GrubbCase.checkGrubbViaUmista
+        , GrubbCase.checkGrubbViaBoas
+        , GrubbCase.checkGrubbViaGeorgian
+        ]
+      , testGroup "Georgian"
+        [ GeorgianCase.georgianAllLower
+        , GeorgianCase.georgianAllUpper
+        , GeorgianCase.georgianCaseCompare
+        , GeorgianCase.checkGeorgianViaUmista
+        , GeorgianCase.checkGeorgianViaBoas
+        , GeorgianCase.checkGeorgianViaGrubb
+        ] 
+      ]
     ]
   ]
