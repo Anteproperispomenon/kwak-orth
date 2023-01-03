@@ -1,5 +1,6 @@
 module Test.Golden.Georgian
-  ( fixGeorgianTest
+  ( fixGeorgianTests
+  , fixGeorgianTest
   , fixGeorgianViaGrubbTest
   , fixGeorgianViaUmistaTest
   , fixGeorgianViaBoasTest
@@ -20,57 +21,72 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
-fixGeorgianTest :: TestTree
-fixGeorgianTest = 
+
+fixGeorgianTests :: TestName -> String -> String -> TestTree
+fixGeorgianTests tstNam inFile outExt = testGroup ("Georgian Tests: " ++ tstNam)
+  [ fixGeorgianTest inFile outExt
+  , fixGeorgianViaGrubbTest outExt
+  , fixGeorgianViaUmistaTest outExt
+  , fixGeorgianViaBoasTest outExt
+  , fixGeorgianViaNapaTest outExt
+  ]
+
+fixGeorgianTest :: String -> String -> TestTree
+fixGeorgianTest inFile outExt = 
   goldenVsString
     "Fix Georgian"
-    "golden/fixedGeorgian.golden"
-    do { inp <- TU.readFile "examples/sample1_umista_raw.txt"
+    ("golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt = decodeToGeorgianTitle $ encodeFromUmista inp
        ; return $ BL.fromStrict $ T.encodeUtf8 txt
        }
 
-fixGeorgianViaGrubbTest :: TestTree
-fixGeorgianViaGrubbTest = 
-  goldenVsStringDiff'
+fixGeorgianViaGrubbTest :: String -> TestTree
+fixGeorgianViaGrubbTest outExt = 
+  goldenVsString
     "Georgian -> Grubb   -> Georgian"
-    "golden/fixedGeorgian.golden"
-    do { inp <- TU.readFile "golden/fixedGeorgian.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToGrubbAscii    $ encodeFromGeorgian   inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromGrubbAscii txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
 
-fixGeorgianViaUmistaTest :: TestTree
-fixGeorgianViaUmistaTest = 
-  goldenVsStringDiff'
+fixGeorgianViaUmistaTest :: String -> TestTree
+fixGeorgianViaUmistaTest outExt = 
+  goldenVsString
     "Georgian -> U'mista -> Georgian"
-    "golden/fixedGeorgian.golden"
-    do { inp <- TU.readFile "golden/fixedGeorgian.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToUmista        $ encodeFromGeorgian   inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromUmista     txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
 
-fixGeorgianViaBoasTest :: TestTree
-fixGeorgianViaBoasTest = 
+
+fixGeorgianViaBoasTest :: String -> TestTree
+fixGeorgianViaBoasTest outExt = 
   goldenVsStringDiff'
     "Georgian -> Boas    -> Georgian"
-    "golden/fixedGeorgian.golden"
-    do { inp <- TU.readFile "golden/fixedGeorgian.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToPseudoBoas $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromBoas txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
 
-fixGeorgianViaNapaTest :: TestTree
-fixGeorgianViaNapaTest = 
+fixGeorgianViaNapaTest :: String -> TestTree
+fixGeorgianViaNapaTest outExt = 
   goldenVsStringDiff'
     "Georgian -> NAPA    -> Georgian"
-    "golden/fixedGeorgian.golden"
-    do { inp <- TU.readFile "golden/fixedGeorgian.golden"
+    goldFile
+    do { inp <- TU.readFile goldFile
        ; let txt1 = decodeToNapa $ encodeFromGeorgian inp
        ; let txt2 = decodeToGeorgianTitle $ encodeFromNapa txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
+  where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
 

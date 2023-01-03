@@ -1,5 +1,6 @@
 module Test.Golden.Grubb
-  ( fixGrubbTest
+  ( fixGrubbTests
+  , fixGrubbTest
   , fixGrubbViaNapaTest
   , fixGrubbViaUmistaTest
   , fixGrubbViaBoasTest
@@ -20,55 +21,67 @@ import Kwakwala.Parsers
 
 import TextUTF8 qualified as TU
 
-fixGrubbTest :: TestTree
-fixGrubbTest = 
+fixGrubbTests :: TestName -> String -> String -> TestTree
+fixGrubbTests tstNam inFile outExt = testGroup ("Grubb Tests: " ++ tstNam)
+  [ fixGrubbTest inFile outExt
+  , fixGrubbViaGeorgianTest inFile outExt
+  , fixGrubbViaUmistaTest inFile outExt
+  , fixGrubbViaBoasTest inFile outExt
+  , fixGrubbViaNapaTest inFile outExt
+  ]
+
+
+-- "examples/sample1_grubb.txt"
+
+fixGrubbTest :: String -> String -> TestTree
+fixGrubbTest inFile outExt = 
   goldenVsString
     "Fix Grubb"
-    "golden/fixedGrubb.golden"
-    do { inp <- TU.readFile "examples/sample1_grubb.txt"
+    ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt = decodeToGrubbAscii $ encodeFromGrubbAscii inp
        ; return $ BL.fromStrict $ T.encodeUtf8 txt
        }
 
-fixGrubbViaNapaTest :: TestTree
-fixGrubbViaNapaTest = 
+fixGrubbViaNapaTest :: String -> String -> TestTree
+fixGrubbViaNapaTest inFile outExt = 
   goldenVsStringDiff'
     "Grubb -> NAPA     -> Grubb"
-    "golden/fixedGrubb.golden"
+    ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
     do { inp <- TU.readFile "examples/sample1_grubb.txt"
        ; let txt1 = decodeToNapa       $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromNapa       txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-fixGrubbViaUmistaTest :: TestTree
-fixGrubbViaUmistaTest = 
+fixGrubbViaUmistaTest :: String -> String -> TestTree
+fixGrubbViaUmistaTest inFile outExt = 
   goldenVsStringDiff'
     "Grubb -> U'mista  -> Grubb"
-    "golden/fixedGrubb.golden"
-    do { inp <- TU.readFile "examples/sample1_grubb.txt"
+    ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt1 = decodeToUmista $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromUmista txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-fixGrubbViaBoasTest :: TestTree
-fixGrubbViaBoasTest = 
+fixGrubbViaBoasTest :: String -> String -> TestTree
+fixGrubbViaBoasTest inFile outExt = 
   goldenVsStringDiff'
     "Grubb -> Boas     -> Grubb"
-    "golden/fixedGrubb.golden"
-    do { inp <- TU.readFile "examples/sample1_grubb.txt"
+    ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt1 = decodeToPseudoBoas $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromBoas       txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
 
-fixGrubbViaGeorgianTest :: TestTree
-fixGrubbViaGeorgianTest = 
+fixGrubbViaGeorgianTest :: String -> String -> TestTree
+fixGrubbViaGeorgianTest inFile outExt = 
   goldenVsStringDiff'
     "Grubb -> Georgian -> Grubb"
-    "golden/fixedGrubb.golden"
-    do { inp <- TU.readFile "examples/sample1_grubb.txt"
+    ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
        ; let txt1 = decodeToGeorgianTitle $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii    $ encodeFromGeorgian   txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2

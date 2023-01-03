@@ -56,13 +56,7 @@ tests = testGroup "Tests"
           ]
         ]
     , testGroup "Grubb"
-        [ testGroup "Parsing"
-          [ Grubb.fixGrubbTest
-          , Grubb.fixGrubbViaNapaTest
-          , Grubb.fixGrubbViaUmistaTest
-          , Grubb.fixGrubbViaBoasTest
-          , Grubb.fixGrubbViaGeorgianTest
-          ]
+        [ Grubb.fixGrubbTests "Original File" "examples/sample1_grubb.txt" "orig"
         , testGroup "Casing"
           [ GrubbCase.grubbAllLower
           , GrubbCase.grubbAllUpper
@@ -73,13 +67,7 @@ tests = testGroup "Tests"
           ]
         ]
     , testGroup "Georgian"
-        [ testGroup "Parsing"
-          [ Georgian.fixGeorgianTest
-          , Georgian.fixGeorgianViaNapaTest
-          , Georgian.fixGeorgianViaUmistaTest
-          , Georgian.fixGeorgianViaBoasTest
-          , Georgian.fixGeorgianViaGrubbTest
-          ]
+        [ Georgian.fixGeorgianTests "Original File" "examples/sample1_umista_raw.txt" "orig"
         , testGroup "Casing"
           [ GeorgianCase.georgianAllLower
           , GeorgianCase.georgianAllUpper
