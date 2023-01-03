@@ -38,13 +38,7 @@ tests = testGroup "Tests"
         ]
       ]
     , testGroup "NAPA"
-        [ testGroup "Parsing"
-          [ Napa.fixNapaTest
-          , Napa.fixNapaViaGrubbTest
-          , Napa.fixNapaViaUmistaTest
-          , Napa.fixNapaViaBoasTest
-          , Napa.fixNapaViaGeorgianTest
-          ]
+        [ Napa.fixNapaTests "Original File" "examples/sample1_napa.txt" "orig"
         , testGroup "Casing"
           [ NapaCase.napaAllLower
           , NapaCase.napaAllUpper
