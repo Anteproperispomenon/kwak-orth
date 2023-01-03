@@ -80,15 +80,7 @@ tests = testGroup "Tests"
       ]
     , testGroup "Casing"
       [ UmistaCase.umistaCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
-      , testGroup "Napa"
-        [ NapaCase.napaAllLower
-        , NapaCase.napaAllUpper
-        , NapaCase.napaCaseCompare
-        , NapaCase.checkNapaViaUmista
-        , NapaCase.checkNapaViaGrubb
-        , NapaCase.checkNapaViaBoas
-        , NapaCase.checkNapaViaGeorgian
-        ]
+      , NapaCase.napaCaseTests "Original File" "examples/sample1_umista_raw.txt" "orig"
       , testGroup "Grubb"
         [ GrubbCase.grubbAllLower
         , GrubbCase.grubbAllUpper
