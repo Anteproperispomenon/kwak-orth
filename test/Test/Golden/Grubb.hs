@@ -30,9 +30,6 @@ fixGrubbTests tstNam inFile outExt = testGroup ("Grubb Tests: " ++ tstNam)
   , fixGrubbViaNapaTest inFile outExt
   ]
 
-
--- "examples/sample1_grubb.txt"
-
 fixGrubbTest :: String -> String -> TestTree
 fixGrubbTest inFile outExt = 
   goldenVsString
@@ -48,7 +45,7 @@ fixGrubbViaNapaTest inFile outExt =
   goldenVsStringDiff'
     "Grubb -> NAPA     -> Grubb"
     ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
-    do { inp <- TU.readFile "examples/sample1_grubb.txt"
+    do { inp <- TU.readFile inFile
        ; let txt1 = decodeToNapa       $ encodeFromGrubbAscii inp
        ; let txt2 = decodeToGrubbAscii $ encodeFromNapa       txt1
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
