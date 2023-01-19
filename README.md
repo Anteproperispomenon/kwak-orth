@@ -20,7 +20,7 @@ To use the simple conversion, first you'll have to compile it
       necessary, copy the ".bat" files from
       "batch_files" to that location as well
       to allow drag-and-drop operation. This
-      option works even if you copy the program
+      option should work even if you copy the program
       to other computers of the same architecture.
 
    2. Run the program through stack. This has the
@@ -66,3 +66,26 @@ directory.
 For more information on the individual functions and modules,
 run `stack haddock`, which will produce a set of HTML files
 with information on the code.
+
+## Acknowledgements
+
+### Orthography Information
+
+Information on the various orthographies used comes from
+a variety of sources.
+
+The main source, used for both U'mista and NAPA, is from
+Chris Harvey's [Language Geek](https://www.languagegeek.com/index.html)
+website, which contains information on [Kwak'wala Orthographies](https://www.languagegeek.com/wakashan/kwakwala.html).
+
+Wikipedia was the main source used for the [IPA](https://en.wikipedia.org/wiki/Kwak%CA%BCwala),
+[traditional NAPA](https://en.wikipedia.org/wiki/Americanist_phonetic_notation), and
+[Georgian](https://en.wikipedia.org/wiki/Georgian_scripts) orthographies.
+
+The Boas orthography is based on a sample of his works.
+
+### Testing
+
+The test suite contains example sentences taken from the FirstVoices
+phrase database. It can be found at
+[FirstVoices Kwak'wala](https://www.firstvoices.com/explore/FV/sections/Data/Kwak'wala/Kwak%CC%93wala/Kwak%CC%93wala).
