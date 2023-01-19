@@ -87,7 +87,7 @@ checkNapaViaGrubb outExt =
 
 checkNapaViaUmista :: String -> TestTree
 checkNapaViaUmista outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "UC: NAPA -> U'mista  -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -99,7 +99,7 @@ checkNapaViaUmista outExt =
 
 checkNapaViaBoas :: String -> TestTree
 checkNapaViaBoas outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "UC: NAPA -> Boas     -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -111,7 +111,7 @@ checkNapaViaBoas outExt =
 
 checkNapaViaGeorgian :: String -> TestTree
 checkNapaViaGeorgian outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "UC: NAPA -> Georgian -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile

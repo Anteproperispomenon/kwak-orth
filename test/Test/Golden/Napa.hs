@@ -43,7 +43,7 @@ fixNapaTest inFile outExt =
 
 fixNapaViaGrubbTest :: String -> TestTree
 fixNapaViaGrubbTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "NAPA -> Grubb    -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -55,7 +55,7 @@ fixNapaViaGrubbTest outExt =
 
 fixNapaViaUmistaTest :: String -> TestTree
 fixNapaViaUmistaTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "NAPA -> U'mista  -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -67,7 +67,7 @@ fixNapaViaUmistaTest outExt =
 
 fixNapaViaBoasTest :: String -> TestTree
 fixNapaViaBoasTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "NAPA -> Boas     -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -79,7 +79,7 @@ fixNapaViaBoasTest outExt =
 
 fixNapaViaGeorgianTest :: String -> TestTree
 fixNapaViaGeorgianTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "NAPA -> Georgian -> NAPA"
     goldFile
     do { inp <- TU.readFile goldFile

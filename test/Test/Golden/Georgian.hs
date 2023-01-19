@@ -66,7 +66,7 @@ fixGeorgianViaUmistaTest outExt =
 
 fixGeorgianViaBoasTest :: String -> TestTree
 fixGeorgianViaBoasTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Georgian -> Boas    -> Georgian"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -78,7 +78,7 @@ fixGeorgianViaBoasTest outExt =
 
 fixGeorgianViaNapaTest :: String -> TestTree
 fixGeorgianViaNapaTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Georgian -> NAPA    -> Georgian"
     goldFile
     do { inp <- TU.readFile goldFile

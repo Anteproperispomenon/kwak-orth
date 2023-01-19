@@ -50,7 +50,7 @@ fixUmistaTest inFile outExt =
 
 fixUmistaViaGrubbTest :: String -> TestTree
 fixUmistaViaGrubbTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "U'mista -> Grubb -> U'mista"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -62,7 +62,7 @@ fixUmistaViaGrubbTest outExt =
 
 fixUmistaViaNapaTest :: String -> TestTree
 fixUmistaViaNapaTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "U'mista -> NAPA  -> U'mista"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -74,7 +74,7 @@ fixUmistaViaNapaTest outExt =
 
 fixUmistaViaBoasTest :: String -> TestTree
 fixUmistaViaBoasTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "U'mista -> Boas  -> U'mista"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -86,7 +86,7 @@ fixUmistaViaBoasTest outExt =
 
 fixUmistaViaGeorgianTest :: String -> TestTree
 fixUmistaViaGeorgianTest outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "U'mista -> Georgian -> U'mista"
     goldFile
     do { inp <- TU.readFile goldFile
@@ -95,7 +95,6 @@ fixUmistaViaGeorgianTest outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/fixedUmista" ++ "_" ++ outExt ++ ".golden"
-
 
 umista2NapaTest :: TestTree
 umista2NapaTest = 

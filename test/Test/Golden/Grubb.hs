@@ -42,7 +42,7 @@ fixGrubbTest inFile outExt =
 
 fixGrubbViaNapaTest :: String -> String -> TestTree
 fixGrubbViaNapaTest inFile outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Grubb -> NAPA     -> Grubb"
     ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
     do { inp <- TU.readFile inFile
@@ -53,7 +53,7 @@ fixGrubbViaNapaTest inFile outExt =
 
 fixGrubbViaUmistaTest :: String -> String -> TestTree
 fixGrubbViaUmistaTest inFile outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Grubb -> U'mista  -> Grubb"
     ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
     do { inp <- TU.readFile inFile
@@ -64,7 +64,7 @@ fixGrubbViaUmistaTest inFile outExt =
 
 fixGrubbViaBoasTest :: String -> String -> TestTree
 fixGrubbViaBoasTest inFile outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Grubb -> Boas     -> Grubb"
     ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
     do { inp <- TU.readFile inFile
@@ -75,7 +75,7 @@ fixGrubbViaBoasTest inFile outExt =
 
 fixGrubbViaGeorgianTest :: String -> String -> TestTree
 fixGrubbViaGeorgianTest inFile outExt = 
-  goldenVsStringDiff'
+  goldenVsString
     "Grubb -> Georgian -> Grubb"
     ("golden/fixedGrubb" ++ "_" ++ outExt ++ ".golden")
     do { inp <- TU.readFile inFile
