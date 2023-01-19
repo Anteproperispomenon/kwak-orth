@@ -39,6 +39,9 @@ mode, run `stack run -- --help` in the library or else run
 `kwak-orth-exe --help` if on Windows, or `./kwak-orth-exe --help`
 if on Unix-like systems.
 
+Note: On Windows, you may have to run `chcp 65001` before running
+the program. The batch files take care of this themselves.
+
 ### Compiling
 
 To compile this library, you will need the Haskell Stack
