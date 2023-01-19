@@ -1,5 +1,6 @@
 
-import Test.Tasty (defaultMain, TestTree, testGroup)
+import Test.Tasty (defaultMain, TestTree, testGroup, localOption)
+import Test.Tasty.Golden (SizeCutoff)
 
 import Test.Golden.Umista   qualified as Umista
 import Test.Golden.Napa     qualified as Napa
@@ -14,7 +15,7 @@ import Test.Golden.Casing.Georgian qualified as GeorgianCase
 import TextUTF8 qualified as TU
 
 main :: IO ()
-main = TU.fixLocale >> defaultMain tests
+main = TU.fixLocale >> defaultMain (localOption (256 :: SizeCutoff) tests)
 
 tests :: TestTree
 tests = testGroup "Tests"
