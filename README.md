@@ -22,6 +22,8 @@ To use the simple conversion, first you'll have to compile it
       to allow drag-and-drop operation. This
       option should work even if you copy the program
       to other computers of the same architecture.
+      If on Mac OS, look at `command_files/README.md`
+      for info on how to use drag-and-drop operation.
 
    2. Run the program through stack. This has the
       advantage of re-compiling the program each
