@@ -34,10 +34,20 @@ isLabial :: Char -> Bool
 isLabial 'ვ' = True
 isLabial 'Ვ' = True
 isLabial 'Ⴅ' = True
+isLabial 'ჿ' = True
+isLabial 'Ჿ' = True
 isLabial  _  = False
 
 isW :: Char -> Bool
 isW = isLabial
+
+isPalatal :: Char -> Bool
+isPalatal 'ჾ' = True
+isPalatal 'Ჾ' = True
+isPalatal  _  = False
+
+isJ :: Char -> Bool
+isJ = isPalatal
 
 ---------------------------------------------------------------
 -- Parsing K
@@ -54,6 +64,7 @@ parseK' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseK' b Nothing = return $ makeCase b K
 parseK' b (Just x)
     | isW         x = AT.anyChar >> (return $ makeCase b KW)
+    | isJ         x = AT.anyChar >> (return $ makeCase b K )
     | otherwise     = return $ makeCase b K
 
 parseKY :: AT.Parser CasedLetter
@@ -66,6 +77,7 @@ parseKY' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseKY' b Nothing = return $ makeCase b KY
 parseKY' b (Just x)
     | isW         x = AT.anyChar >> (return $ makeCase b KWY)
+    | isJ         x = AT.anyChar >> (return $ makeCase b KY )
     | otherwise     = return $ makeCase b KY
 
 ---------------------------------------------------------------
@@ -112,6 +124,7 @@ parseG' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseG' b Nothing = return $ makeCase b G
 parseG' b (Just x)
     | isW         x = AT.anyChar >> (return $ makeCase b GW)
+    | isJ         x = AT.anyChar >> (return $ makeCase b G )
     | otherwise     = return $ makeCase b G
 
 -----------------------
@@ -143,6 +156,7 @@ parseX' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseX' b Nothing = return $ makeCase b X
 parseX' b (Just x)
     | isW         x = AT.anyChar >> (return $ makeCase b XW)
+    | isJ         x = AT.anyChar >> (return $ makeCase b X )
     | otherwise     = return $ makeCase b X
 
 parseXU :: AT.Parser CasedLetter
@@ -280,7 +294,6 @@ parseLH = do
     ; return $ makeCase b LH
     }
 
-
 -----------------------
 -- Entry Point
 parseW :: AT.Parser CasedLetter
@@ -337,7 +350,7 @@ parseY' (Just x)
 parseY2 :: AT.Parser CasedLetter
 parseY2 = AT.char 'Ჸ' >> AT.peekChar >>= parseY''
 
--- Since Mtavruli has an character for the
+-- Since Mtavruli has a character for the
 -- glottal stop, the glottal stop is the
 -- capitalised character.
 parseY'' :: (Maybe Char) -> AT.Parser CasedLetter

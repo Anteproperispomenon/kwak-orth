@@ -24,6 +24,8 @@ import TextUTF8 qualified as TU
 fixGeorgianTests :: TestName -> String -> String -> TestTree
 fixGeorgianTests tstNam inFile outExt = testGroup ("Georgian Tests: " ++ tstNam)
   [ fixGeorgianTest inFile outExt
+  , georgianCustomTest1 inFile outExt
+  , georgianCustomTest2 outExt
   , fixGeorgianViaGrubbTest outExt
   , fixGeorgianViaUmistaTest outExt
   , fixGeorgianViaBoasTest outExt
@@ -87,3 +89,29 @@ fixGeorgianViaNapaTest outExt =
        ; return $ BL.fromStrict $ T.encodeUtf8 txt2
        }
   where goldFile = "golden/fixedGeorgian" ++ "_" ++ outExt ++ ".golden"
+
+georgianCustomTest1 :: String -> String -> TestTree
+georgianCustomTest1 inFile outExt = 
+  goldenVsString
+    "Output Alt Georgian"
+    ("golden/fixedGeorgianC" ++ "_" ++ outExt ++ ".golden")
+    do { inp <- TU.readFile inFile
+       ; let txt = decodeToGeorgianC fullCustom $ encodeFromUmista inp
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt
+       }
+
+georgianCustomTest2 :: String -> TestTree
+georgianCustomTest2 outExt = 
+  goldenVsString
+    "Parse Alt Georgian"
+    goldFileO
+    do { inp <- TU.readFile goldFileI
+       ; let txt1 = decodeToGeorgianTitle $ encodeFromGeorgian inp
+       ; return $ BL.fromStrict $ T.encodeUtf8 txt1
+       }
+  where goldFileI = "golden/fixedGeorgianC" ++ "_" ++ outExt ++ ".golden"
+        goldFileO = "golden/fixedGeorgian"  ++ "_" ++ outExt ++ ".golden"
+         
+
+fullCustom :: GeorgianOutputConfig
+fullCustom = GeorgianOutputConfig True True

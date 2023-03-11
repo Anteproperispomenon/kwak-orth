@@ -15,16 +15,21 @@ alphabet to Kwak'wala.
 module Kwakwala.Output.Georgian
     -- * Exclusively Using Strict Text
     ( decodeToGeorgian
+    , decodeToGeorgianC
     , decodeToGeorgianAlt
     , decodeToGeorgianTitle
     -- * Strict Text with Builders
     , decodeToGeorgian2
+    , decodeToGeorgianC2
     , decodeToGeorgianAlt2
     , decodeToGeorgianTitle2
     -- * Lazy Text Output
     , decodeToGeorgianLazy
+    , decodeToGeorgianLazyC
     , decodeToGeorgianLazyAlt
     , decodeToGeorgianLazyTitle
+    -- * Configuration Type
+    , GeorgianOutputConfig(..)
     ) where
 
 import Data.Text              qualified as T
@@ -218,6 +223,174 @@ outputGeorgianX'' O   = "Ო"
 outputGeorgianX'' U   = "Უ"
 outputGeorgianX'' AU  = "Ჷ"
 
+-------------------------------------------
+-- With custom options
+
+-- | Options for outputting different. The use of the
+-- hard sign to indicate palatalisation (which isn't
+-- normally indicated) is for helping to train
+-- speech-to-text algorithms, which might be confused
+-- by representing (kw) as (kj + w).
+data GeorgianOutputConfig = GeorgianOutputConfig
+  { _gocUseLabSign :: Bool -- Use Abkhaz labialisation sign. (ჿᲿ)
+  , _gocUsePalSign :: Bool -- Use Abkhaz 'hard' sign. (ჾᲾ)
+  } deriving (Show, Eq)
+
+-- | Georgian output using the Mkhedruli script.
+-- This is the standard script used for most
+-- Georgian text today.
+-- Using `IsString` so that you only have
+-- to write one function for multiple output
+-- types.
+outputGeorgianC :: (IsString a) => GeorgianOutputConfig -> KwakLetter -> a
+outputGeorgianC _ M   = "მ"
+outputGeorgianC _ MY  = "ჸმ"
+outputGeorgianC _ N   = "ნ"
+outputGeorgianC _ NY  = "ჸნ"
+outputGeorgianC _ P   = "ფ"
+outputGeorgianC _ T   = "თ"
+outputGeorgianC _ B   = "ბ"
+outputGeorgianC _ D   = "დ"
+outputGeorgianC _ PY  = "პ"
+outputGeorgianC _ TY  = "ტ"
+outputGeorgianC _ TS  = "ც"
+outputGeorgianC _ TL  = "ჩ"
+outputGeorgianC _ DZ  = "ძ"
+outputGeorgianC _ DL  = "ჯ"
+outputGeorgianC _ TSY = "წ"
+outputGeorgianC _ TLY = "ჭ"
+outputGeorgianC _ S   = "ს"
+outputGeorgianC _ LH  = "შ"
+outputGeorgianC _ L   = "ლ"
+outputGeorgianC _ LY  = "ჸლ"
+outputGeorgianC _ J   = "ჲ"
+outputGeorgianC _ JY  = "ჸჲ"
+outputGeorgianC goc K 
+  | (_gocUsePalSign goc) = "ქჾ"
+  | otherwise            = "ქ"
+outputGeorgianC goc KW 
+  | (_gocUseLabSign goc) = "ქჿ"
+  | otherwise = "ქვ"
+outputGeorgianC goc G
+  | (_gocUsePalSign goc) = "გჾ"
+  | otherwise            = "გ"
+outputGeorgianC goc GW
+  | (_gocUseLabSign goc) = "გჿ"
+  | otherwise = "გვ"
+outputGeorgianC goc KY
+  | (_gocUsePalSign goc) = "კჾ"
+  | otherwise            = "კ"
+outputGeorgianC goc KWY
+  | (_gocUseLabSign goc) = "კჿ"
+  | otherwise = "კვ"
+outputGeorgianC _ Q   = "ჴ"
+outputGeorgianC goc QW
+  | (_gocUseLabSign goc) = "ჴჿ"
+  | otherwise = "ჴვ"
+outputGeorgianC _ GU  = "ღ"
+outputGeorgianC goc GUW
+  | (_gocUseLabSign goc) = "ღჿ"
+  | otherwise = "ღვ"
+outputGeorgianC _ QY  = "ყ"
+outputGeorgianC goc QWY
+  | (_gocUseLabSign goc) = "ყჿ"
+  | otherwise = "ყვ"
+outputGeorgianC goc X
+  | (_gocUsePalSign goc) = "რჾ"
+  | otherwise            = "რ"
+outputGeorgianC goc XW
+  | (_gocUseLabSign goc) = "რჿ"
+  | otherwise = "რვ"
+outputGeorgianC _ XU  = "ხ"
+outputGeorgianC goc XUW
+  | (_gocUseLabSign goc) = "ხჿ"
+  | otherwise = "ხვ"
+outputGeorgianC _ W   = "ვ"
+outputGeorgianC _ WY  = "ჸვ"
+outputGeorgianC _ Y   = "ჸ"
+outputGeorgianC _ H   = "ჰ"
+outputGeorgianC _ A   = "ა"
+outputGeorgianC _ E   = "ე"
+outputGeorgianC _ I   = "ი"
+outputGeorgianC _ O   = "ო"
+outputGeorgianC _ U   = "უ"
+outputGeorgianC _ AU  = "ჷ"
+
+outputGeorgianC' :: (IsString a) => GeorgianOutputConfig -> KwakLetter -> a
+outputGeorgianC' _ M   = "Მ"
+outputGeorgianC' _ MY  = "Ჸმ"
+outputGeorgianC' _ N   = "Ნ"
+outputGeorgianC' _ NY  = "Ჸნ"
+outputGeorgianC' _ P   = "Ფ"
+outputGeorgianC' _ T   = "Თ"
+outputGeorgianC' _ B   = "Ბ"
+outputGeorgianC' _ D   = "Დ"
+outputGeorgianC' _ PY  = "Პ"
+outputGeorgianC' _ TY  = "Ტ"
+outputGeorgianC' _ TS  = "Ც"
+outputGeorgianC' _ TL  = "Ჩ"
+outputGeorgianC' _ DZ  = "Ძ"
+outputGeorgianC' _ DL  = "Ჯ"
+outputGeorgianC' _ TSY = "Წ"
+outputGeorgianC' _ TLY = "Ჭ"
+outputGeorgianC' _ S   = "Ს"
+outputGeorgianC' _ LH  = "Შ"
+outputGeorgianC' _ L   = "Ლ"
+outputGeorgianC' _ LY  = "Ჸლ"
+outputGeorgianC' _ J   = "Ჲ"
+outputGeorgianC' _ JY  = "Ჸჲ"
+outputGeorgianC' goc K
+  | (_gocUsePalSign goc) = "Ქჾ"
+  | otherwise            = "Ქ"
+outputGeorgianC' goc KW
+  | (_gocUseLabSign goc) = "Ქჿ"
+  | otherwise = "Ქვ"
+outputGeorgianC' goc G
+  | (_gocUsePalSign goc) = "Გჾ"
+  | otherwise            = "Გ"
+outputGeorgianC' goc GW
+  | (_gocUseLabSign goc) = "Გჿ"
+  | otherwise = "Გვ"
+outputGeorgianC' goc KY
+  | (_gocUsePalSign goc) = "Კჾ"
+  | otherwise            = "Კ"
+outputGeorgianC' goc KWY
+  | (_gocUseLabSign goc) = "Კჿ"
+  | otherwise = "Კვ"
+outputGeorgianC' _ Q   = "Ჴ"
+outputGeorgianC' goc QW
+  | (_gocUseLabSign goc) = "Ჴჿ"
+  | otherwise = "Ჴვ"
+outputGeorgianC' _ GU  = "Ღ"
+outputGeorgianC' goc GUW
+  | (_gocUseLabSign goc) = "Ღჿ"
+  | otherwise = "Ღვ"
+outputGeorgianC' _ QY  = "Ყ"
+outputGeorgianC' goc QWY
+  | (_gocUseLabSign goc) = "Ყჿ"
+  | otherwise = "Ყვ"
+outputGeorgianC' goc X
+  | (_gocUsePalSign goc) = "Რჾ"
+  | otherwise            = "Რ"
+outputGeorgianC' goc XW
+  | (_gocUseLabSign goc) = "Რჿ"
+  | otherwise = "Რვ"
+outputGeorgianC' _ XU  = "Ხ"
+outputGeorgianC' goc XUW
+  | (_gocUseLabSign goc) = "Ხჿ"
+  | otherwise = "Ხვ"
+outputGeorgianC' _ W   = "Ვ"
+outputGeorgianC' _ WY  = "Ჸვ"
+outputGeorgianC' _ Y   = "Ჸ"
+outputGeorgianC' _ H   = "Ჰ"
+outputGeorgianC' _ A   = "Ა"
+outputGeorgianC' _ E   = "Ე"
+outputGeorgianC' _ I   = "Ი"
+outputGeorgianC' _ O   = "Ო"
+outputGeorgianC' _ U   = "Უ"
+outputGeorgianC' _ AU  = "Ჷ"
+
+
 ----------------------
 -- Possibilities for smallcaps L in uppercase
 
@@ -234,6 +407,12 @@ outputGeorgian' = outputGeorgianX'
 
 outputGeorgian'' :: KwakLetter -> T.Text
 outputGeorgian'' = outputGeorgianX''
+
+outputGeorgianCT :: GeorgianOutputConfig -> KwakLetter -> T.Text
+outputGeorgianCT = outputGeorgianC 
+
+outputGeorgianCT' :: GeorgianOutputConfig -> KwakLetter -> T.Text
+outputGeorgianCT' = outputGeorgianC'
 
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
@@ -257,6 +436,14 @@ decodeToGeorgianAlt = T.concat . (map $ mapChar $ mapCase outputGeorgian outputG
 decodeToGeorgianTitle :: [CasedChar] -> T.Text
 decodeToGeorgianTitle = T.concat . (map $ mapChar $ mapCase outputGeorgian'' outputGeorgian)
 
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts,
+-- with customisable options. Use this when you want
+-- more control over the form of the output of your text.
+-- 
+-- This version uses strict `T.Text` output.
+decodeToGeorgianC :: GeorgianOutputConfig -> [CasedChar] -> T.Text
+decodeToGeorgianC goc = T.concat . (map $ mapChar $ mapCase (outputGeorgianCT' goc) (outputGeorgianCT goc))
+
 --------------------------------------------
 -- Using Builders
 
@@ -271,6 +458,15 @@ outputGeorgian2' = outputGeorgianX'
 -- Builder-based Mtavruli letter output
 outputGeorgian2'' :: KwakLetter -> TL.Builder
 outputGeorgian2'' = outputGeorgianX''
+
+-- Builder-based configurable lower-case/Mkhedruli letter output
+outputGeorgian2C :: GeorgianOutputConfig -> KwakLetter -> TL.Builder
+outputGeorgian2C = outputGeorgianC
+
+
+-- Builder-based configurable Mtavruli letter output
+outputGeorgian2C' :: GeorgianOutputConfig -> KwakLetter -> TL.Builder
+outputGeorgian2C' = outputGeorgianC'
 
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
@@ -297,6 +493,14 @@ decodeToGeorgianAlt2 = TL.toStrict . decodeToGeorgianLazyAlt
 decodeToGeorgianTitle2 :: [CasedChar] -> T.Text
 decodeToGeorgianTitle2 = TL.toStrict . decodeToGeorgianLazyTitle
 
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts,
+-- with customisable options. Use this when you want
+-- more control over the form of the output of your text.
+-- 
+-- This version uses strict `T.Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToGeorgianC2 :: GeorgianOutputConfig -> [CasedChar] -> T.Text
+decodeToGeorgianC2 goc = TL.toStrict . (decodeToGeorgianLazyC goc)
 
 -- | Georgian output using both Mkhedruli and Asomtavruli scripts.
 -- Use this if you want title-case text.
@@ -319,4 +523,12 @@ decodeToGeorgianLazyAlt = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText
 -- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToGeorgianLazyTitle :: [CasedChar] -> TL.Text
 decodeToGeorgianLazyTitle = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGeorgian2'' outputGeorgian2))
+
+-- | Georgian Output using both Mkhedruli and Mtavruli scripts,
+-- with customisable options. Use this when you want
+-- more control over the form of the output of your text.
+-- 
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToGeorgianLazyC :: GeorgianOutputConfig -> [CasedChar] -> TL.Text
+decodeToGeorgianLazyC goc = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase (outputGeorgian2C' goc) (outputGeorgian2C goc)))
 

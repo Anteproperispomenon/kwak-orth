@@ -74,16 +74,21 @@ module Kwakwala.Output
     -- * Georgian
     -- ** Exclusively Using Strict Text
     , decodeToGeorgian
+    , decodeToGeorgianC
     , decodeToGeorgianAlt
     , decodeToGeorgianTitle
     -- ** Strict Text with Builders
     , decodeToGeorgian2
+    , decodeToGeorgianC2
     , decodeToGeorgianAlt2
     , decodeToGeorgianTitle2
     -- ** Lazy Text Output
     , decodeToGeorgianLazy
+    , decodeToGeorgianLazyC
     , decodeToGeorgianLazyAlt
     , decodeToGeorgianLazyTitle
+    -- ** Georgian Configuration Options
+    , GeorgianOutputConfig(..)
     ) where
 
 import Kwakwala.Output.UmistaOutputNew
