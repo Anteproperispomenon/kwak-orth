@@ -232,7 +232,7 @@ outputUmistaAlt' x  = outputUmista' x
 
 -- | Standard U'mista text output.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToUmista :: [CasedChar] -> T.Text
 decodeToUmista = decodeToUmistaY
 
@@ -250,7 +250,7 @@ decodeToUmistaAltZ = T.concat . (map $ mapChar $ mapCase outputUmistaAlt' output
 -- and places it __after__ the consonant,
 -- rather than before.
 --
--- This version uses strict `Text` output.
+-- This version uses strict `T.Text` output.
 decodeToUmistaAlt :: [CasedChar] -> T.Text
 decodeToUmistaAlt xs = decodeToUmistaAltZ $ decodeToUmistaYnew [] $ groupBy isSameCaseType xs
 
@@ -455,7 +455,7 @@ outputUmistaAlt2' x  = outputUmista2' x
 
 -- | Standard U'mista text output.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToUmista2 :: [CasedChar] -> T.Text
 decodeToUmista2 = TL.toStrict . decodeToUmistaLazy
@@ -472,7 +472,7 @@ decodeToUmistaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ ma
 -- and places it __after__ the consonant,
 -- rather than before.
 --
--- This version uses strict `Text` output with
+-- This version uses strict `T.Text` output with
 -- lazy `TL.Builder`s as an intermediate.
 decodeToUmistaAlt2 :: [CasedChar] -> T.Text
 decodeToUmistaAlt2 = TL.toStrict . decodeToUmistaAltLazy

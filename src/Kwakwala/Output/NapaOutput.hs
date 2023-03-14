@@ -22,6 +22,11 @@ module Kwakwala.Output.NapaOutput
     -- * Lazy Text Output
     , decodeToNapaLazy
     , decodeToNAPALazy
+    -- * Configurable
+    , decodeToNapaC
+    , decodeToNapaLazyC
+    -- * Configuration
+    , NapaOutputConfig(..)
     ) where
 
 import Data.Text              qualified as T
@@ -251,6 +256,122 @@ outputNAPA2' O   = "O"
 outputNAPA2' U   = "U"
 outputNAPA2' AU  = "Ə"
 
+--------------------------------------------
+-- Using Custom Options
+
+data NapaOutputConfig = NapaOutputConfig
+  { _nocUseUpperLambda :: Bool
+  } deriving (Show, Eq)
+
+
+-- Builder-based lower-case letter output
+outputNAPAC :: NapaOutputConfig -> KwakLetter -> TL.Builder
+outputNAPAC _ M   = "m"
+outputNAPAC _ MY  = "m\x313"
+outputNAPAC _ N   = "n"
+outputNAPAC _ NY  = "n\x313"
+outputNAPAC _ P   = "p"
+outputNAPAC _ T   = "t"
+outputNAPAC _ B   = "b"
+outputNAPAC _ D   = "d"
+outputNAPAC _ PY  = "p\x313"
+outputNAPAC _ TY  = "t\x313"
+outputNAPAC _ TS  = "c"
+outputNAPAC _ TL  = "ƛ"
+outputNAPAC _ DZ  = "dᶻ"
+outputNAPAC _ DL  = "λ"
+outputNAPAC _ TSY = "c\x313"
+outputNAPAC _ TLY = "ƛ\x313"
+outputNAPAC _ S   = "s"
+outputNAPAC _ LH  = "ł"
+outputNAPAC _ L   = "l"
+outputNAPAC _ LY  = "l\x313"
+outputNAPAC _ J   = "y"
+outputNAPAC _ JY  = "y\x313"
+outputNAPAC _ K   = "k"
+outputNAPAC _ KW  = "kʷ"
+outputNAPAC _ G   = "g"
+outputNAPAC _ GW  = "gʷ"
+outputNAPAC _ KY  = "k\x313"
+outputNAPAC _ KWY = "k\x313ʷ"
+outputNAPAC _ Q   = "q"
+outputNAPAC _ QW  = "qʷ"
+outputNAPAC _ GU  = "ǧ"
+outputNAPAC _ GUW = "ǧʷ"
+outputNAPAC _ QY  = "q\x313"
+outputNAPAC _ QWY = "q\x313ʷ"
+outputNAPAC _ X   = "x"
+outputNAPAC _ XW  = "xʷ"
+outputNAPAC _ XU  = "x\x30c"
+outputNAPAC _ XUW = "x\x30cʷ"
+outputNAPAC _ W   = "w"
+outputNAPAC _ WY  = "w\x313"
+outputNAPAC _ Y   = "ʔ"
+outputNAPAC _ H   = "h"
+outputNAPAC _ A   = "a"
+outputNAPAC _ E   = "e"
+outputNAPAC _ I   = "i"
+outputNAPAC _ O   = "o"
+outputNAPAC _ U   = "u"
+outputNAPAC _ AU  = "ə"
+
+-- Builder-based Upper-case letters
+outputNAPAC' :: NapaOutputConfig -> KwakLetter -> TL.Builder
+outputNAPAC' _ M   = "M"
+outputNAPAC' _ MY  = "M\x313"
+outputNAPAC' _ N   = "N"
+outputNAPAC' _ NY  = "N\x313"
+outputNAPAC' _ P   = "P"
+outputNAPAC' _ T   = "T"
+outputNAPAC' _ B   = "B"
+outputNAPAC' _ D   = "D"
+outputNAPAC' _ PY  = "P\x313"
+outputNAPAC' _ TY  = "T\x313"
+outputNAPAC' _ TS  = "C"
+outputNAPAC' _ TL  = "ƛ"
+outputNAPAC' _ DZ  = "Dᶻ"
+outputNAPAC' noc DL
+  | (_nocUseUpperLambda noc) = "Λ"
+  | otherwise = "λ"
+outputNAPAC' _ TSY = "C\x313"
+outputNAPAC' _ TLY = "ƛ̓"
+outputNAPAC' _ S   = "S"
+outputNAPAC' _ LH  = "Ł"
+outputNAPAC' _ L   = "L"
+outputNAPAC' _ LY  = "L\x313"
+outputNAPAC' _ J   = "Y"
+outputNAPAC' _ JY  = "Y\x313"
+outputNAPAC' _ K   = "K"
+outputNAPAC' _ KW  = "Kʷ"
+outputNAPAC' _ G   = "G"
+outputNAPAC' _ GW  = "Gʷ"
+outputNAPAC' _ KY  = "K\x313"
+outputNAPAC' _ KWY = "K\x313ʷ"
+outputNAPAC' _ Q   = "Q"
+outputNAPAC' _ QW  = "Qʷ"
+outputNAPAC' _ GU  = "Ǧ"
+outputNAPAC' _ GUW = "Ǧʷ"
+outputNAPAC' _ QY  = "Q\x313"
+outputNAPAC' _ QWY = "Q\x313ʷ"
+outputNAPAC' _ X   = "X"
+outputNAPAC' _ XW  = "Xʷ"
+outputNAPAC' _ XU  = "X\x30c"
+outputNAPAC' _ XUW = "X\x30cʷ"
+outputNAPAC' _ W   = "W"
+outputNAPAC' _ WY  = "W\x313"
+outputNAPAC' _ Y   = "ʔ"
+outputNAPAC' _ H   = "H"
+outputNAPAC' _ A   = "A"
+outputNAPAC' _ E   = "E"
+outputNAPAC' _ I   = "I"
+outputNAPAC' _ O   = "O"
+outputNAPAC' _ U   = "U"
+outputNAPAC' _ AU  = "Ə"
+
+
+--------------------------------------------
+-- Actual Functions to Use
+
 -- | Output `T.Text` in the Kwak'wala variant of NAPA.
 --
 -- This version uses strict `T.Text` output with
@@ -272,4 +393,17 @@ decodeToNapaLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapC
 decodeToNAPALazy :: [CasedChar] -> TL.Text
 decodeToNAPALazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputNAPA2' outputNAPA2))
 
+-- | Output `T.Text` in the Kwak'wala variant of NAPA,
+-- with custom options
+--
+-- This version uses strict `T.Text` output with
+-- lazy `TL.Builder`s as an intermediate.
+decodeToNapaC :: NapaOutputConfig -> [CasedChar] -> T.Text
+decodeToNapaC noc = TL.toStrict . (decodeToNapaLazyC noc)
 
+-- | Output `TL.Text` in the Kwak'wala variant of NAPA,
+-- with custom options.
+--
+-- This version uses lazy `TL.Text` output using `TL.Builder`s.
+decodeToNapaLazyC :: NapaOutputConfig -> [CasedChar] -> TL.Text
+decodeToNapaLazyC noc = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase (outputNAPAC' noc) (outputNAPAC noc)))

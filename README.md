@@ -20,8 +20,10 @@ To use the simple conversion, first you'll have to compile it
       necessary, copy the ".bat" files from
       "batch_files" to that location as well
       to allow drag-and-drop operation. This
-      option works even if you copy the program
+      option should work even if you copy the program
       to other computers of the same architecture.
+      If on Mac OS, look at `command_files/README.md`
+      for info on how to use drag-and-drop operation.
 
    2. Run the program through stack. This has the
       advantage of re-compiling the program each
@@ -38,6 +40,9 @@ For information on how to run the program in command-line/terminal/bash
 mode, run `stack run -- --help` in the library or else run
 `kwak-orth-exe --help` if on Windows, or `./kwak-orth-exe --help`
 if on Unix-like systems.
+
+Note: On Windows, you may have to run `chcp 65001` before running
+the program. The batch files take care of this themselves.
 
 ### Compiling
 
@@ -66,3 +71,26 @@ directory.
 For more information on the individual functions and modules,
 run `stack haddock`, which will produce a set of HTML files
 with information on the code.
+
+## Acknowledgements
+
+### Orthography Information
+
+Information on the various orthographies used comes from
+a variety of sources.
+
+The main source, used for both U'mista and NAPA, is from
+Chris Harvey's [Language Geek](https://www.languagegeek.com/index.html)
+website, which contains information on [Kwak'wala Orthographies](https://www.languagegeek.com/wakashan/kwakwala.html).
+
+Wikipedia was the main source used for the [IPA](https://en.wikipedia.org/wiki/Kwak%CA%BCwala),
+[traditional NAPA](https://en.wikipedia.org/wiki/Americanist_phonetic_notation), and
+[Georgian](https://en.wikipedia.org/wiki/Georgian_scripts) orthographies.
+
+The Boas orthography is based on a sample of his works.
+
+### Testing
+
+The test suite contains example sentences taken from the FirstVoices
+phrase database. It can be found at
+[FirstVoices Kwak'wala](https://www.firstvoices.com/explore/FV/sections/Data/Kwak'wala/Kwak%CC%93wala/Kwak%CC%93wala).

@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Kwakwala.Output
       Kwakwala.Output.Georgian
       Kwakwala.Output.GrubbAscii
       Kwakwala.Output.IPAOutput
@@ -34,6 +35,7 @@ library
       Kwakwala.Output.NapaOutputAlt
       Kwakwala.Output.PseudoBoasOutput
       Kwakwala.Output.UmistaOutputNew
+      Kwakwala.Parsers
       Kwakwala.Parsers.Boas
       Kwakwala.Parsers.GeorgianParser
       Kwakwala.Parsers.GrubbAsciiParser
@@ -47,6 +49,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances
@@ -75,6 +78,7 @@ executable kwak-orth-exe
   hs-source-dirs:
       app
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances
@@ -103,10 +107,21 @@ test-suite kwak-orth-test
   main-is: Spec.hs
   other-modules:
       Test.Examples.Umista
+      Test.Golden.Casing.Georgian
+      Test.Golden.Casing.Grubb
+      Test.Golden.Casing.Napa
+      Test.Golden.Casing.Umista
+      Test.Golden.Georgian
+      Test.Golden.Grubb
+      Test.Golden.Helpers
+      Test.Golden.Napa
+      Test.Golden.Umista
+      Test.Helpers
       Paths_kwak_orth
   hs-source-dirs:
       test
   default-extensions:
+      BlockArguments
       DerivingStrategies
       ExplicitForAll
       FlexibleInstances
@@ -126,5 +141,7 @@ test-suite kwak-orth-test
     , directory
     , filepath
     , kwak-orth
+    , tasty
+    , tasty-golden
     , text
   default-language: Haskell2010

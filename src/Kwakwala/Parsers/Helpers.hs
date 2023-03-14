@@ -18,6 +18,7 @@ codepoints count as apostrophes.
 module Kwakwala.Parsers.Helpers
   ( parsePipe
   , satisfyMaybe
+  , liftP
   ) where
 
 import Data.Attoparsec.Text qualified as AT
@@ -40,6 +41,12 @@ satisfyMaybe p = (fx <$> AT.peekChar) >>= (maybe (return Nothing) (\x -> AT.anyC
     where fx Nothing  = Nothing
           fx (Just x) = if (p x) then (Just x) else Nothing
 
+
+-- | Lift a predicate over a maybe.
+liftP :: (a -> Bool) -> (Maybe a) -> Bool
+liftP _ Nothing  = False
+liftP p (Just x) = p x
+ 
 {-
 isPipe :: Char -> Bool
 isPipe '|' = True
