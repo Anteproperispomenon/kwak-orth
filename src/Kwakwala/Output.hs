@@ -41,6 +41,10 @@ module Kwakwala.Output
     -- ** Lazy Text Output
     , decodeToNapaAltLazy
     , decodeToNAPAaltLazy
+    -- ** Configurable Napa
+    , decodeToNapaC
+    , decodeToNapaLazyC
+    , NapaOutputConfig(..)
     -- * Grubb-ASCII
     -- ** Exclusively Using Strict Text
     , decodeToGrubbAscii

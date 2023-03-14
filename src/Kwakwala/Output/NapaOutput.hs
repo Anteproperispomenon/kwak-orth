@@ -260,7 +260,7 @@ outputNAPA2' AU  = "Ə"
 -- Using Custom Options
 
 data NapaOutputConfig = NapaOutputConfig
-  { nocUseUpperLambda :: Bool
+  { _nocUseUpperLambda :: Bool
   } deriving (Show, Eq)
 
 
@@ -331,7 +331,7 @@ outputNAPAC' _ TS  = "C"
 outputNAPAC' _ TL  = "ƛ"
 outputNAPAC' _ DZ  = "Dᶻ"
 outputNAPAC' noc DL
-  | (nocUseUpperLambda noc) = "Λ"
+  | (_nocUseUpperLambda noc) = "Λ"
   | otherwise = "λ"
 outputNAPAC' _ TSY = "C\x313"
 outputNAPAC' _ TLY = "ƛ̓"
