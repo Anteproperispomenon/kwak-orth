@@ -38,6 +38,11 @@ module Kwakwala.Parsers
     -- * Georgian
     , encodeFromGeorgian
     , parseGeorgian
+    -- * Island
+    , encodeFromIsland
+    , encodeFromIslandOld
+    , parseIsland
+    , parseIslandOld
     ) where
 
 import Kwakwala.Parsers.Boas
@@ -45,4 +50,4 @@ import Kwakwala.Parsers.GeorgianParser
 import Kwakwala.Parsers.GrubbAsciiParser
 import Kwakwala.Parsers.NapaParser
 import Kwakwala.Parsers.Umista
-
+import Kwakwala.Parsers.Island

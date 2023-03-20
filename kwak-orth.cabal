@@ -41,6 +41,7 @@ library
       Kwakwala.Parsers.GeorgianParser
       Kwakwala.Parsers.GrubbAsciiParser
       Kwakwala.Parsers.Helpers
+      Kwakwala.Parsers.Island
       Kwakwala.Parsers.NapaParser
       Kwakwala.Parsers.Umista
       Kwakwala.Sounds
