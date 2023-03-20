@@ -93,6 +93,10 @@ module Kwakwala.Output
     , decodeToGeorgianLazyTitle
     -- ** Georgian Configuration Options
     , GeorgianOutputConfig(..)
+    -- * Island
+    , decodeToIsland
+    , decodeToIsland2
+    , decodeToIslandLazy
     ) where
 
 import Kwakwala.Output.UmistaOutputNew
@@ -102,4 +106,4 @@ import Kwakwala.Output.GrubbAscii
 import Kwakwala.Output.PseudoBoasOutput
 import Kwakwala.Output.IPAOutput
 import Kwakwala.Output.Georgian
-
+import Kwakwala.Output.Island
