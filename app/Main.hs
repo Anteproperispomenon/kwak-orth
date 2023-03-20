@@ -45,6 +45,7 @@ import Kwakwala.Parsers.GeorgianParser
 import Kwakwala.Parsers.GrubbAsciiParser
 import Kwakwala.Parsers.NapaParser
 import Kwakwala.Parsers.Umista
+import Kwakwala.Parsers.Island
 
 import Kwakwala.Output.Georgian
 import Kwakwala.Output.GrubbAscii
@@ -52,9 +53,9 @@ import Kwakwala.Output.IPAOutput
 import Kwakwala.Output.NapaOutput
 import Kwakwala.Output.PseudoBoasOutput
 import Kwakwala.Output.UmistaOutputNew
+import Kwakwala.Output.Island
 
-
-data OrthType = Umista | Napa | Umista2 | Boas | PseudoBoas | Georgian | Georgian2 | GrubbAscii | GrubbAsciiJ | IPA | IPA2 deriving (Show, Eq)
+data OrthType = Umista | Napa | Umista2 | Boas | PseudoBoas | Georgian | Georgian2 | GrubbAscii | GrubbAsciiJ | IPA | IPA2 | Island deriving (Show, Eq)
 
 data ArgInput
    = FullInput { inputFile  :: FilePath
@@ -100,6 +101,7 @@ fixInput (FullInput' inf Nothing     inp outp ovr sty ver)
     | (outp == GrubbAsciiJ) = (FullInput inf (outf ".grbj") inp outp ovr sty ver)
     | (outp == IPA        ) = (FullInput inf (outf ".ipa" ) inp outp ovr sty ver)
     | (outp == IPA2       ) = (FullInput inf (outf ".ipa2") inp outp ovr sty ver)
+    | (outp == Island     ) = (FullInput inf (outf ".isld") inp outp ovr sty ver)
     where (fl,xt) = splitExtension inf
           outf x  = fl ++ x ++ xt
 
@@ -135,7 +137,8 @@ fullInput'
                    <> "[N]APA, "           -- "\t[N]    : NAPA\n"
                    <> "[B]oas, "           -- "\t[B/PB] : (Pseudo-)Boas\n"
                    <> "[G]rubb-Ascii, "    -- "\t[G]    : Grubb-Ascii\n"
-                   <> "or [GR] (Georgian)" -- "\t[GR]   : Georgian\n"
+                   <> "[GR] (Georgian)," -- "\t[GR]   : Georgian\n"
+                   <> "or [F] (Island)"
                    )
             )
         <*> option parseOrth'
@@ -152,7 +155,8 @@ fullInput'
                    <> "[G]rubb-Ascii, "    -- "\t[G]    : Grubb-Ascii\n"
                    <> "[J] (Grubb-Ascii-J),"
                    <> "[I]PA,  "           -- "\t[I]    : IPA \n"
-                   <> "or [GR] (Georgian)" -- "\t[GR]   : Georgian\n"
+                   <> "[GR] (Georgian)," -- "\t[GR]   : Georgian\n"
+                   <> "or [F] (Island)"
                    )
             )
         <*> switch
@@ -181,7 +185,7 @@ parseOrth' :: ReadM OrthType
 parseOrth' = eitherReader (AT.parseOnly parseOrth . T.pack)
 
 parseOrth :: AT.Parser OrthType
-parseOrth = parseOrthNapa <|> parseOrthUmista <|> parseOrthPseudoBoas <|> parseOrthBoas <|> parseOrthGeorgian <|> parseOrthGrubb <|> parseOrthGrubbJ <|> parseOrthIPA
+parseOrth = parseOrthNapa <|> parseOrthUmista <|> parseOrthPseudoBoas <|> parseOrthBoas <|> parseOrthGeorgian <|> parseOrthGrubb <|> parseOrthGrubbJ <|> parseOrthIPA <|> parseOrthIsland
 
 parseOrthNapa :: AT.Parser OrthType
 parseOrthNapa = (AT.choice ["n","N","NAPA","napa","Napa"]) $> Napa
@@ -218,6 +222,9 @@ parseOrthGrubb = (AT.choice ["g","G","Grubb","grubb", "GRUBB", "Grubb-Ascii", "g
 
 parseOrthGrubbJ :: AT.Parser OrthType
 parseOrthGrubbJ = (AT.choice ["j","J","GJ","gj"]) $> GrubbAsciiJ
+
+parseOrthIsland :: AT.Parser OrthType
+parseOrthIsland = (AT.choice ["f","F","Island","island"]) $> Island
 
 -- example sentence
 -- sentence1 = "ga̱lsga̱lʦisux̱ da ḵwaḵ̕wanix̱" :: T.Text
@@ -379,6 +386,7 @@ encodeFrom GrubbAscii  = \_ -> encodeFromGrubbAscii
 encodeFrom GrubbAsciiJ = \_ -> encodeFromGrubbAscii
 encodeFrom IPA         = \_ -> encodeFromGrubbAscii
 encodeFrom IPA2        = \_ -> encodeFromGrubbAscii
+encodeFrom Island      = \_ -> encodeFromIsland
 
 encodeFromUmistaType :: Bool -> T.Text -> [CasedChar]
 encodeFromUmistaType False = encodeFromUmista
@@ -400,4 +408,5 @@ decodeTo GrubbAscii  = decodeToGrubbAscii
 decodeTo GrubbAsciiJ = decodeToGrubbAsciiJ
 decodeTo IPA         = decodeToIpa
 decodeTo IPA2        = decodeToIpaAlt
+decodeTo Island      = decodeToIsland
 

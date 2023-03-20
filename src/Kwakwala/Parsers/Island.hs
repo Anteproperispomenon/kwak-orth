@@ -52,6 +52,20 @@ isWedge :: Char -> Bool
 isWedge '}' = True
 isWedge  _  = False
 
+-- For characters that are used
+-- as letters in "Island".
+isOtherAlph :: Char -> Bool
+isOtherAlph '[' = True
+isOtherAlph ']' = True
+isOtherAlph '{' = True
+isOtherAlph '}' = True
+isOtherAlph '%' = True
+isOtherAlph '>' = True
+isOtherAlph '+' = True
+isOtherAlph '@' = True
+isOtherAlph '#' = True
+isOtherAlph  _  = False
+
 
 ---------------------------------------------------------------
 -- Parsing K
@@ -356,7 +370,7 @@ parseDL = (AT.char ']' $> Min DL)
 -- Entry Point
 parseTL :: AT.Parser CasedLetter
 parseTL = do
-    { b <- isUpper <$> AT.satisfy (\x -> (toLower x) == '[')
+    { b <- isUpper <$> AT.satisfy (\x -> x == '[') -- (\x -> (toLower x) == '[')
     ; AT.peekChar >>= parseTL' b
     }
 
@@ -423,7 +437,7 @@ parseIslandLetter = AT.choice
 -- Parse non-alphabetical and non-apostrophe characters
 -- until next letter.
 parsePuncts :: AT.Parser CasedChar
-parsePuncts = Punct <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x || (x == '|')))
+parsePuncts = Punct <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x || isOtherAlph x || (x == '|')))
 
 parseIslandChar :: AT.Parser CasedChar
 parseIslandChar = (Kwak <$> parseIslandLetter) <|> parsePipe <|> (Punct <$> T.singleton <$> AT.anyChar)
