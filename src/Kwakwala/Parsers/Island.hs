@@ -50,6 +50,7 @@ isW = isLabial
 
 isWedge :: Char -> Bool
 isWedge '}' = True
+isWedge '^' = True
 isWedge  _  = False
 
 -- For characters that are used
@@ -64,8 +65,8 @@ isOtherAlph '>' = True
 isOtherAlph '+' = True
 isOtherAlph '@' = True
 isOtherAlph '#' = True
+isOtherAlph '^' = True
 isOtherAlph  _  = False
-
 
 ---------------------------------------------------------------
 -- Parsing K
