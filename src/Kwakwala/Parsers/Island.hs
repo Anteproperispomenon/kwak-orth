@@ -38,11 +38,14 @@ import Data.Either
 -- Apostrophe/Ejective Marker
 isApost :: Char -> Bool
 isApost '{' = True
+isApost '`' = True
+isApost '|' = True -- hopefully won't cause trouble
 isApost _ = False
 
 -- ʷᵂ
 isLabial :: Char -> Bool
 isLabial '#' = True
+isLabial 'w' = True
 isLabial  _  = False
 
 isW :: Char -> Bool
@@ -53,6 +56,11 @@ isWedge '}' = True
 isWedge '^' = True
 isWedge  _  = False
 
+isMacron :: Char -> Bool
+isMacron '-' = True
+isMacron '=' = True
+isMacron  _  = False
+
 -- For characters that are used
 -- as letters in "Island".
 isOtherAlph :: Char -> Bool
@@ -62,6 +70,7 @@ isOtherAlph '{' = True
 isOtherAlph '}' = True
 isOtherAlph '%' = True
 isOtherAlph '>' = True
+isOtherAlph '<' = True
 isOtherAlph '+' = True
 isOtherAlph '@' = True
 isOtherAlph '#' = True
@@ -422,6 +431,10 @@ parseO  = (AT.char 'o' $> Min  O) <|> (AT.char 'O' $> Maj  O)
 parseU  :: AT.Parser CasedLetter
 parseU  = (AT.char 'u' $> Min  U) <|> (AT.char 'U' $> Maj  U)
 
+-- Convert to a unicode macron
+parseMacron :: AT.Parser CasedChar
+parseMacron = (AT.satisfy isMacron) $> (Punct "\x304")
+
 ---------------------------------------------------------------
 -- The Full Parser
 
@@ -436,16 +449,21 @@ parseIslandLetter = AT.choice
   ,parseC
   ]
 
+parseIslandLetter' :: AT.Parser CasedChar
+parseIslandLetter' = (Kwak <$> parseIslandLetter) <|> parseMacron
+
 -- Parse non-alphabetical and non-apostrophe characters
 -- until next letter.
 parsePuncts :: AT.Parser CasedChar
 parsePuncts = Punct <$> AT.takeWhile1 (\x -> not (isAlpha x || isApost x || isOtherAlph x || (x == '|')))
 
 parseIslandChar :: AT.Parser CasedChar
-parseIslandChar = (Kwak <$> parseIslandLetter) <|> parsePipe <|> (Punct <$> T.singleton <$> AT.anyChar)
+parseIslandChar = parseIslandLetter' <|> parsePipe <|> (Punct <$> T.singleton <$> AT.anyChar)
+-- parseIslandChar = (Kwak <$> parseIslandLetter) <|> parsePipe <|> (Punct <$> T.singleton <$> AT.anyChar)
 
 parseIslandCharNew :: AT.Parser CasedChar
-parseIslandCharNew = (Kwak <$> parseIslandLetter) <|> parsePipe <|> parsePuncts <|> (Punct <$> T.singleton <$> AT.anyChar)
+parseIslandCharNew = parseIslandLetter' <|> parsePipe <|> parsePuncts <|> (Punct <$> T.singleton <$> AT.anyChar)
+-- parseIslandCharNew = (Kwak <$> parseIslandLetter) <|> parsePipe <|> parsePuncts <|> (Punct <$> T.singleton <$> AT.anyChar)
 
 -- | `AT.Parser` for the Island font/NAPA orthography.
 --
