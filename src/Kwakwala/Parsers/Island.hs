@@ -341,7 +341,8 @@ parseL' b (Just x)
 -- Taken directly from the Umista parser
 -- (Then added alternative for upper-case tilde-L)
 parseLH :: AT.Parser CasedLetter
-parseLH = (AT.satisfy (\x -> x == '>')) $> (Min LH)
+parseLH = ((AT.char '>') $> (Min LH)) <|> ((AT.char '<') $> (Maj LH))
+    -- (AT.satisfy (\x -> x == '>')) $> (Min LH)
 -- parseLH = ((AT.satisfy (\x -> x == 'ł' || x == 'ƚ' || x == 'ɫ' || x == 'ɬ')) $> Min LH) <|> (AT.char 'Ł' $> Maj LH) <|> (AT.char 'Ɫ' $> Maj LH)
 -- Ɫ == U+2C62 == \x2c62
 
