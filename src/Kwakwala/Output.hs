@@ -48,19 +48,31 @@ module Kwakwala.Output
     -- * Grubb-ASCII
     -- ** Exclusively Using Strict Text
     , decodeToGrubbAscii
+    , decodeToGrubbAscii7
     , decodeToGrubbAsciiX
+    , decodeToGrubbAsciiX7
     , decodeToGrubbAsciiJ
+    , decodeToGrubbAsciiJ7
     , decodeToGrubbAsciiJX
+    , decodeToGrubbAsciiJX7
     -- ** Strict Text with Builders
     , decodeToGrubbAscii2
+    , decodeToGrubbAscii27
     , decodeToGrubbAsciiX2
+    , decodeToGrubbAsciiX27
     , decodeToGrubbAsciiJ2
+    , decodeToGrubbAsciiJ27
     , decodeToGrubbAsciiJX2
+    , decodeToGrubbAsciiJX27
     -- ** Lazy Text Output
     , decodeToGrubbAsciiLazy
+    , decodeToGrubbAsciiLazy7
     , decodeToGrubbAsciiLazyX
+    , decodeToGrubbAsciiLazyX7
     , decodeToGrubbAsciiLazyJ
+    , decodeToGrubbAsciiLazyJ7
     , decodeToGrubbAsciiLazyJX
+    , decodeToGrubbAsciiLazyJX7
     -- * Pseudo-Boas
     , decodeToPseudoBoas
     , decodeToPseudoBoas2

@@ -55,7 +55,17 @@ isApost '`'  = True
 isApost '̕'  = True
 isApost '\x313' = True
 isApost '\x2bc' = True
+-- isApost '7' = True -- Careful with this one.
 isApost _ = False
+
+isApost' :: Char -> Bool
+isApost' '\'' = True
+isApost' '`'  = True
+isApost' '̕'  = True
+isApost' '\x313' = True
+isApost' '\x2bc' = True
+isApost' '7' = True -- Careful with this one.
+isApost' _ = False
 
 -- ʷᵂ
 isLabial :: Char -> Bool
@@ -97,17 +107,17 @@ parseQ = do
 parseK' :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseK' b Nothing = return $ makeCase b K
 parseK' b (Just x)
-    | isApost     x = AT.anyChar >> AT.peekChar >>= parseKY b
-    | isW         x = AT.anyChar >> AT.peekChar >>= parseKW b
-    | isH         x = AT.anyChar >> AT.peekChar >>= parseKH b
-    | otherwise     = return $ makeCase b K
+    | isApost'  x = AT.anyChar >> AT.peekChar >>= parseKY b
+    | isW       x = AT.anyChar >> AT.peekChar >>= parseKW b
+    | isH       x = AT.anyChar >> AT.peekChar >>= parseKH b
+    | otherwise   = return $ makeCase b K
 
 parseKH :: Bool -> (Maybe Char) -> AT.Parser CasedLetter
 parseKH b Nothing = return $ makeCase b Q
 parseKH b (Just x)
-    | isApost x = AT.anyChar >> AT.peekChar >>= parseKHY b
-    | isW     x = AT.anyChar >> AT.peekChar >>= parseKHW b
-    | otherwise = return $ makeCase b Q
+    | isApost' x = AT.anyChar >> AT.peekChar >>= parseKHY b
+    | isW      x = AT.anyChar >> AT.peekChar >>= parseKHW b
+    | otherwise  = return $ makeCase b Q
 
 parseKY :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseKY b Nothing = return $ makeCase b KY
@@ -125,14 +135,14 @@ parseKHY b (Just x)
 parseKW :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseKW b Nothing = return $ makeCase b KW
 parseKW b (Just x)
-    | isApost x = AT.anyChar >> (return $ makeCase b KWY)
-    | otherwise = return $ makeCase b KW
+    | isApost' x = AT.anyChar >> (return $ makeCase b KWY)
+    | otherwise  = return $ makeCase b KW
 
 parseKHW :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseKHW b Nothing = return $ makeCase b KW
 parseKHW b (Just x)
-    | isApost x = AT.anyChar >> (return $ makeCase b QWY)
-    | otherwise = return $ makeCase b QW
+    | isApost' x = AT.anyChar >> (return $ makeCase b QWY)
+    | otherwise  = return $ makeCase b QW
 
 -----------------------
 -- Entry Point For G
@@ -237,8 +247,8 @@ parseP = do
 parseP' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseP' b Nothing = return $ makeCase b P
 parseP' b (Just x)
-    | isApost x = AT.anyChar >> (return $ makeCase b PY)
-    | otherwise = return $ makeCase b P
+    | isApost' x = AT.anyChar >> (return $ makeCase b PY)
+    | otherwise  = return $ makeCase b P
 
 -----------------------
 -- Entry Point
@@ -251,7 +261,7 @@ parseT = do
 parseT' :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseT' b Nothing = return $ makeCase b T
 parseT' b (Just x)
-    | isApost x              = AT.anyChar >> AT.peekChar >>= parseTY b -- (return $ makeCase b TY)
+    | isApost' x             = AT.anyChar >> AT.peekChar >>= parseTY b -- (return $ makeCase b TY)
     | (x == 's' || x == 'S') = AT.anyChar >> AT.peekChar >>= parseTS b
     | (x == 'l' || x == 'L') = AT.anyChar >> AT.peekChar >>= parseTL b
     | otherwise              = return $ makeCase b T
@@ -259,14 +269,14 @@ parseT' b (Just x)
 parseTS :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseTS b Nothing = return $ makeCase b TS
 parseTS b (Just x)
-    | isApost x = AT.anyChar >> (return $ makeCase b TSY)
-    | otherwise = return $ makeCase b TS
+    | isApost' x = AT.anyChar >> (return $ makeCase b TSY)
+    | otherwise  = return $ makeCase b TS
 
 parseTL :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseTL b Nothing = return $ makeCase b TL
 parseTL b (Just x)
-    | isApost x = AT.anyChar >> (return $ makeCase b TLY)
-    | otherwise = return $ makeCase b TL
+    | isApost' x = AT.anyChar >> (return $ makeCase b TLY)
+    | otherwise  = return $ makeCase b TL
 
 parseTY :: Bool -> Maybe Char -> AT.Parser CasedLetter
 parseTY b Nothing = return $ makeCase b TY
