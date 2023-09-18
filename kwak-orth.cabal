@@ -31,6 +31,7 @@ library
       Kwakwala.Output.Georgian
       Kwakwala.Output.GrubbAscii
       Kwakwala.Output.IPAOutput
+      Kwakwala.Output.Island
       Kwakwala.Output.NapaOutput
       Kwakwala.Output.NapaOutputAlt
       Kwakwala.Output.PseudoBoasOutput
@@ -40,6 +41,7 @@ library
       Kwakwala.Parsers.GeorgianParser
       Kwakwala.Parsers.GrubbAsciiParser
       Kwakwala.Parsers.Helpers
+      Kwakwala.Parsers.Island
       Kwakwala.Parsers.NapaParser
       Kwakwala.Parsers.Umista
       Kwakwala.Sounds

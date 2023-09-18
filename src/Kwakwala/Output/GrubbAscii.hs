@@ -29,24 +29,42 @@ of a word are omitted. If you want to
 __keep__ the glottal stops at the beginnings
 of words, use the functions that have an \"X\"
 near the end.
+
+Finally, functions that end in '7' replace
+apostrophes with the number '7'. This is usually
+used in applications where apostrophes aren't
+allowed.
+
 -}
 
 module Kwakwala.Output.GrubbAscii
     -- * Exclusively Using Strict Text
     ( decodeToGrubbAscii
+    , decodeToGrubbAscii7
     , decodeToGrubbAsciiX
+    , decodeToGrubbAsciiX7
     , decodeToGrubbAsciiJ
+    , decodeToGrubbAsciiJ7
     , decodeToGrubbAsciiJX
+    , decodeToGrubbAsciiJX7
     -- * Strict Text with Builders
     , decodeToGrubbAscii2
+    , decodeToGrubbAscii27
     , decodeToGrubbAsciiX2
+    , decodeToGrubbAsciiX27
     , decodeToGrubbAsciiJ2
+    , decodeToGrubbAsciiJ27
     , decodeToGrubbAsciiJX2
+    , decodeToGrubbAsciiJX27
     -- * Lazy Text Output
     , decodeToGrubbAsciiLazy
+    , decodeToGrubbAsciiLazy7
     , decodeToGrubbAsciiLazyX
+    , decodeToGrubbAsciiLazyX7
     , decodeToGrubbAsciiLazyJ
+    , decodeToGrubbAsciiLazyJ7
     , decodeToGrubbAsciiLazyJX
+    , decodeToGrubbAsciiLazyJX7
     ) where
 
 import Data.Text              qualified as T
@@ -197,6 +215,10 @@ outputGrubbAsciiJ' x = outputGrubbAscii' x
 decodeToGrubbAsciiOld :: [CasedChar] -> T.Text
 decodeToGrubbAsciiOld = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' outputGrubbAscii)
 
+to7 :: Char -> Char
+to7 '\'' = '7'
+to7  x  =  x
+
 -- Again from U'mista
 
 -- | This is the standard version of Grubb-ASCII,
@@ -208,6 +230,9 @@ decodeToGrubbAsciiOld = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' ou
 decodeToGrubbAscii :: [CasedChar] -> T.Text
 decodeToGrubbAscii xs = decodeToGrubbMain $ setupGlottal xs
 
+decodeToGrubbAscii7 :: [CasedChar] -> T.Text
+decodeToGrubbAscii7 xs = T.map to7 $ decodeToGrubbMain $ setupGlottal xs
+
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"H\/h\", and
 -- glottal stops at the beginnings of words
@@ -216,6 +241,9 @@ decodeToGrubbAscii xs = decodeToGrubbMain $ setupGlottal xs
 -- This version uses strict `T.Text` output.
 decodeToGrubbAsciiX :: [CasedChar] -> T.Text
 decodeToGrubbAsciiX xs = decodeToGrubbMain xs
+
+decodeToGrubbAsciiX7 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiX7 xs = T.map to7 $ decodeToGrubbMain xs
 
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
@@ -226,6 +254,9 @@ decodeToGrubbAsciiX xs = decodeToGrubbMain xs
 decodeToGrubbAsciiJ :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJ xs = decodeToGrubbMainJ $ setupGlottal xs
 
+decodeToGrubbAsciiJ7 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJ7 xs = T.map to7 $ decodeToGrubbMainJ $ setupGlottal xs
+
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
 -- glottal stops at the beginnings of words
@@ -235,6 +266,8 @@ decodeToGrubbAsciiJ xs = decodeToGrubbMainJ $ setupGlottal xs
 decodeToGrubbAsciiJX :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJX xs = decodeToGrubbMain xs
 
+decodeToGrubbAsciiJX7 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJX7 xs = T.map to7 $ decodeToGrubbMain xs
 
 decodeToGrubbMain :: [CasedChar] -> T.Text
 decodeToGrubbMain = T.concat . (map $ mapChar $ mapCase outputGrubbAscii' outputGrubbAscii)
@@ -387,6 +420,9 @@ outputGrubbAsciiJ2' x = outputGrubbAscii2' x
 decodeToGrubbAscii2 :: [CasedChar] -> T.Text
 decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy
 
+decodeToGrubbAscii27 :: [CasedChar] -> T.Text
+decodeToGrubbAscii27 = T.map to7 . TL.toStrict . decodeToGrubbAsciiLazy
+
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"H\/h\", and
 -- glottal stops at the beginnings of words
@@ -396,6 +432,9 @@ decodeToGrubbAscii2 = TL.toStrict . decodeToGrubbAsciiLazy
 -- lazy `TL.Builder`s as an intermediate.
 decodeToGrubbAsciiX2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiX2 = TL.toStrict . decodeToGrubbAsciiLazyX
+
+decodeToGrubbAsciiX27 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiX27 = T.map to7 . TL.toStrict . decodeToGrubbAsciiLazyX
 
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
@@ -407,6 +446,9 @@ decodeToGrubbAsciiX2 = TL.toStrict . decodeToGrubbAsciiLazyX
 decodeToGrubbAsciiJ2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJ2 = TL.toStrict . decodeToGrubbAsciiLazyJ
 
+decodeToGrubbAsciiJ27 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJ27 = T.map to7 . TL.toStrict . decodeToGrubbAsciiLazyJ
+
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
 -- glottal stops at the beginnings of words
@@ -417,6 +459,9 @@ decodeToGrubbAsciiJ2 = TL.toStrict . decodeToGrubbAsciiLazyJ
 decodeToGrubbAsciiJX2 :: [CasedChar] -> T.Text
 decodeToGrubbAsciiJX2 = TL.toStrict . decodeToGrubbAsciiLazyJX
 
+decodeToGrubbAsciiJX27 :: [CasedChar] -> T.Text
+decodeToGrubbAsciiJX27 = T.map to7 . TL.toStrict . decodeToGrubbAsciiLazyJX
+
 -- | This is the standard version of Grubb-ASCII,
 -- where \/h\/ is represented as \"H\/h\", and
 -- glottal stops at the beginnings of words
@@ -425,6 +470,9 @@ decodeToGrubbAsciiJX2 = TL.toStrict . decodeToGrubbAsciiLazyJX
 -- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToGrubbAsciiLazy :: [CasedChar] -> TL.Text
 decodeToGrubbAsciiLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2)) . setupGlottal
+
+decodeToGrubbAsciiLazy7 :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazy7 = TL.map to7 . TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2)) . setupGlottal
 
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"H\/h\", and
@@ -435,6 +483,9 @@ decodeToGrubbAsciiLazy = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText 
 decodeToGrubbAsciiLazyX :: [CasedChar] -> TL.Text
 decodeToGrubbAsciiLazyX = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2))
 
+decodeToGrubbAsciiLazyX7 :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyX7 = TL.map to7 . TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAscii2' outputGrubbAscii2))
+
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
 -- glottal stops at the beginnings of words
@@ -443,6 +494,9 @@ decodeToGrubbAsciiLazyX = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText
 -- This version uses lazy `TL.Text` output using `TL.Builder`s.
 decodeToGrubbAsciiLazyJ :: [CasedChar] -> TL.Text
 decodeToGrubbAsciiLazyJ = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2)) . setupGlottal
+
+decodeToGrubbAsciiLazyJ7 :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyJ7 = TL.map to7 . TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2)) . setupGlottal
 
 -- | This is an alternate version of Grubb-ASCII,
 -- where \/h\/ is represented as \"J\/j\", and
@@ -453,3 +507,5 @@ decodeToGrubbAsciiLazyJ = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText
 decodeToGrubbAsciiLazyJX :: [CasedChar] -> TL.Text
 decodeToGrubbAsciiLazyJX = TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2))
 
+decodeToGrubbAsciiLazyJX7 :: [CasedChar] -> TL.Text
+decodeToGrubbAsciiLazyJX7 = TL.map to7 . TL.toLazyText . (mconcat . (map $ mapChar2 TL.fromText $ mapCase outputGrubbAsciiJ2' outputGrubbAsciiJ2))
